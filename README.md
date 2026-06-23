@@ -1,58 +1,109 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# IntranetZK
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Base de aplicação interna construída com Laravel, Inertia.js e Vue 3. O objetivo do projeto é centralizar fluxos operacionais da empresa em uma intranet autenticada, com navegação única, módulos evolutivos e uma experiência de uso consistente para rotinas internas.
 
-## About Laravel
+## Visão do projeto
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+O IntranetZK deve funcionar como uma central operacional para colaboradores. A primeira etapa estabelece a fundação técnica da aplicação: autenticação, layout principal, tema claro/escuro, dashboard inicial e rotas de módulos. A partir dessa base, os módulos reais podem ser desenvolvidos sem retornar ao modelo de páginas Blade tradicionais.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Módulos previstos nesta fase:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Dashboard operacional.
+- Chamados internos.
+- Comunicados.
+- Base de conhecimento.
+- Colaboradores.
 
-## Learning Laravel
+## Estado atual
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+A aplicação já está estruturada como uma base real Inertia:
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Root view Inertia em `resources/views/app.blade.php`.
+- Middleware Inertia registrado no grupo `web`.
+- Entrada Vue em `resources/js/app.js`.
+- Layout principal em `resources/js/Layouts/AppShell.vue`.
+- Dashboard vazio autenticado em `resources/js/Pages/Dashboard.vue`.
+- Tela de login Inertia em `resources/js/Pages/Auth/Login.vue`.
+- Compartilhamento global de `auth.user` via `HandleInertiaRequests`.
+- Rotas protegidas por autenticação para dashboard e módulos.
+- Tema claro/escuro controlado por `data-theme`.
+- Projeto Vue separado removido; o frontend oficial passa a viver em `resources/js`.
+- `welcome.blade.php` removido; Blade fica apenas como root técnico do Inertia.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Relatório evolutivo
 
-## Agentic Development
+1. O projeto saiu do esqueleto padrão Laravel e passou a ter uma base Inertia + Vue funcional.
+2. Foi criada a root view `app.blade.php`, responsável por carregar Vite, Inertia Head e o app Vue.
+3. O middleware `HandleInertiaRequests` foi adicionado e configurado para compartilhar o usuário autenticado.
+4. A rota `/` passou a renderizar o dashboard via Inertia e exigir autenticação.
+5. Foram adicionadas rotas e páginas placeholder para os módulos principais.
+6. Foi implementado login/logout usando autenticação web padrão do Laravel.
+7. O layout principal passou a concentrar navegação, dados do usuário, alternância de tema e saída da sessão.
+8. A documentação e os testes foram ajustados para refletir o novo fluxo autenticado.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Stack
+
+- Laravel 13.
+- PHP 8.3+.
+- Inertia Laravel.
+- Vue 3.
+- Vite.
+- Tailwind CSS 4.
+- SQLite em desenvolvimento local.
+
+## Execução local
+
+Instale dependências:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+npm install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Prepare ambiente e banco:
 
-## Contributing
+```bash
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Execute a aplicação:
 
-## Code of Conduct
+```bash
+php artisan serve
+npm run dev
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Credenciais locais criadas pelo seeder:
 
-## Security Vulnerabilities
+```text
+E-mail: test@example.com
+Senha: password
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Validação
 
-## License
+Comandos usados para validar a base atual:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+npm run build
+php artisan test
+php artisan route:list
+```
+
+No ambiente Windows atual, o binário correto de PHP identificado foi:
+
+```text
+C:\php\php.exe
+```
+
+Se `php` no terminal não responder corretamente, ajuste o `PATH` para priorizar esse binário.
+
+## Próximos passos
+
+- Definir modelo de permissões e perfis de usuário.
+- Substituir placeholders por telas reais dos módulos.
+- Criar componentes compartilhados de formulário, tabela, empty state e feedback.
+- Implementar busca global quando houver dados reais.
+- Evoluir testes de feature por módulo.
