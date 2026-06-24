@@ -8,11 +8,12 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 
-    --color-brand-50: oklch(0.97 0.03 250);
-    --color-brand-100: oklch(0.93 0.05 250);
-    --color-brand-500: oklch(0.62 0.18 255);
-    --color-brand-600: oklch(0.55 0.2 255);
-    --color-brand-700: oklch(0.48 0.18 255);
+    --color-brand-50:  oklch(0.97 0.03 145);
+    --color-brand-100: oklch(0.93 0.07 145);
+    --color-brand-400: oklch(0.78 0.19 148);
+    --color-brand-500: oklch(0.70 0.21 148);
+    --color-brand-600: oklch(0.60 0.19 148);
+    --color-brand-700: oklch(0.50 0.17 148);
 }
 
 :root {

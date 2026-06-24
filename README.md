@@ -13,6 +13,7 @@ Módulos previstos nesta fase:
 - Comunicados.
 - Base de conhecimento.
 - Colaboradores.
+- Meu perfil.
 
 ## Estado atual
 
@@ -25,6 +26,8 @@ A aplicação já está estruturada como uma base real Inertia:
 - Dashboard vazio autenticado em `resources/js/Pages/Dashboard.vue`.
 - Tela de login Inertia em `resources/js/Pages/Auth/Login.vue`.
 - Compartilhamento global de `auth.user` via `HandleInertiaRequests`.
+- Campo `profile` em usuários para preparar a evolução de perfis de acesso.
+- Página inicial de perfil em `resources/js/Pages/Profile/Show.vue`.
 - Rotas protegidas por autenticação para dashboard e módulos.
 - Tema claro/escuro controlado por `data-theme`.
 - Projeto Vue separado removido; o frontend oficial passa a viver em `resources/js`.
@@ -40,6 +43,7 @@ A aplicação já está estruturada como uma base real Inertia:
 6. Foi implementado login/logout usando autenticação web padrão do Laravel.
 7. O layout principal passou a concentrar navegação, dados do usuário, alternância de tema e saída da sessão.
 8. A documentação e os testes foram ajustados para refletir o novo fluxo autenticado.
+9. Foi adicionado o campo de perfil do usuário e a tela inicial "Meu perfil".
 
 ## Stack
 

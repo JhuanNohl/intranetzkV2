@@ -29,6 +29,24 @@ class ExampleTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Dashboard')
                 ->where('auth.user.email', $user->email)
+                ->where('auth.user.profile', $user->profile)
+            );
+    }
+
+    public function test_authenticated_users_can_see_their_profile(): void
+    {
+        $user = User::factory()->create([
+            'profile' => 'administrador',
+        ]);
+
+        $response = $this->actingAs($user)->get('/meu-perfil');
+
+        $response
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Profile/Show')
+                ->where('auth.user.email', $user->email)
+                ->where('auth.user.profile', 'administrador')
             );
     }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="dark">
 
 <head>
     <meta charset="utf-8">
@@ -8,12 +8,8 @@
 
     <script>
         (() => {
-            const stored = localStorage.getItem('intranetzk.theme') || 'system';
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const shouldUseDark = stored === 'dark' || (stored === 'system' && prefersDark);
-
-            document.documentElement.dataset.theme = shouldUseDark ? 'dark' : 'light';
-            document.documentElement.dataset.themePreference = stored;
+            const stored = localStorage.getItem('intranetzk.theme') || 'dark';
+            document.documentElement.dataset.theme = stored;
         })();
     </script>
 
@@ -21,7 +17,7 @@
     <x-inertia::head />
 </head>
 
-<body class="min-h-screen bg-zinc-50 text-zinc-950 antialiased dark:bg-zinc-950 dark:text-zinc-50">
+<body class="min-h-screen bg-zinc-50 text-zinc-950 antialiased dark:bg-zinc-950 dark:text-zinc-50 dark:[color-scheme:dark]">
     <x-inertia::app />
 </body>
 
