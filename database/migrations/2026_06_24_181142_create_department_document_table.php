@@ -13,7 +13,20 @@ return new class extends Migration
     {
         Schema::create('department_document', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('department_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('document_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->string('permission')->default('view');
+
             $table->timestamps();
+
+            $table->unique(['department_id', 'document_id']);
         });
     }
 

@@ -13,7 +13,21 @@ return new class extends Migration
     {
         Schema::create('document_reads', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('document_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->timestamp('read_at')->nullable();
+            $table->timestamp('confirmed_at')->nullable();
+
             $table->timestamps();
+
+            $table->unique(['document_id', 'user_id']);
         });
     }
 

@@ -13,6 +13,19 @@ return new class extends Migration
     {
         Schema::create('document_categories', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('department_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
+
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->string('description')->nullable();
+
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
+
             $table->timestamps();
         });
     }
