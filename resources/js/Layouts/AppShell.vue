@@ -80,13 +80,19 @@ function logout() {
         <aside class="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 xl:flex">
 
             <!-- Logo -->
-            <div class="flex items-center gap-3 border-b border-zinc-200 px-4 py-4 dark:border-zinc-800">
-                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                    </svg>
-                </div>
-                <span class="text-sm font-semibold text-zinc-900 dark:text-white">IntranetZK</span>
+            <div class="flex h-20 items-center border-b border-zinc-200 px-4 dark:border-zinc-800">
+                <Link href="/" class="block w-full" aria-label="IntranetZK">
+                    <img
+                        :src="'/img/logo-zkteco-light.png'"
+                        alt="ZKTeco"
+                        class="h-9 w-full object-contain object-center dark:hidden"
+                    >
+                    <img
+                        :src="'/img/logo-zkteco-dark.png'"
+                        alt="ZKTeco"
+                        class="hidden h-9 w-full object-contain object-center dark:block"
+                    >
+                </Link>
             </div>
 
             <!-- Nav -->
