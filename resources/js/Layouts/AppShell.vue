@@ -9,6 +9,7 @@ const NAV_ICONS = {
     currency:  'M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
     code:      'M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5',
     book:      'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25',
+    plus:      'M12 4.5v15m7.5-7.5h-15',
     headset:   'M6 18.75a.75.75 0 001.5 0v-6a.75.75 0 00-1.5 0v6zM18 18.75a.75.75 0 001.5 0v-6a.75.75 0 00-1.5 0v6zM4.5 9.75v1.5a7.5 7.5 0 0015 0v-1.5M4.5 9.75A2.25 2.25 0 016.75 7.5h10.5a2.25 2.25 0 012.25 2.25',
     monitor:   'M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25',
     academic:  'M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5',
@@ -21,7 +22,6 @@ const groups = [
     {
         items: [
             { label: 'Início', href: '/', icon: 'home' },
-            { label: 'Documentos', href: '/documents', icon: 'book' },
         ],
     },
     {
@@ -131,20 +131,46 @@ function logout() {
                 </div>
             </nav>
 
-            <!-- User -->
+            <!-- Documents -->
             <div class="border-t border-zinc-200 px-3 py-3 dark:border-zinc-800">
+                <p class="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+                    Documentos
+                </p>
+
                 <Link
-                    href="/meu-perfil"
-                    class="flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                    :class="isActive('/meu-perfil') ? 'bg-zinc-100 dark:bg-zinc-800' : ''"
+                    href="/documents/create"
+                    class="flex items-center gap-3 rounded-lg border border-brand-500/20 bg-brand-500/10 px-3 py-2 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-500/15 dark:border-brand-500/20 dark:bg-brand-500/15 dark:text-brand-400 dark:hover:bg-brand-500/20"
+                    :class="isActive('/documents/create') ? 'ring-1 ring-brand-500/30' : ''"
                 >
-                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500/15 text-xs font-semibold text-brand-600 dark:text-brand-400">
-                        {{ initials(user?.name) }}
-                    </div>
-                    <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium text-zinc-900 dark:text-white">{{ user?.name }}</p>
-                        <p class="truncate text-xs capitalize text-zinc-400">{{ user?.profile }}</p>
-                    </div>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4.5 w-4.5 shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        v-html="NAV_ICONS.plus"
+                    />
+                    Adicionar documento
+                </Link>
+
+                <Link
+                    href="/documents"
+                    class="mt-1 flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
+                    :class="isActive('/documents') && !isActive('/documents/create')
+                        ? 'bg-zinc-100 font-medium text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100'
+                        : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100'"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4.5 w-4.5 shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        v-html="NAV_ICONS.book"
+                    />
+                    Central de documentos
                 </Link>
             </div>
         </aside>
