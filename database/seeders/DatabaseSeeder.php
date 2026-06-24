@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             AreaDepartmentSeeder::class,
+            DocumentCategorySeeder::class,
         ]);
         User::query()->updateOrCreate(
             ['email' => 'test@example.com'],

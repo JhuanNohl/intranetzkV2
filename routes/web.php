@@ -11,10 +11,10 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('documents', DocumentController::class);
-
     Route::get('/departments/{department:slug}/documents', [DocumentController::class, 'index'])
         ->name('departments.documents.index');
+
+    Route::resource('documents', DocumentController::class);
 });
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
