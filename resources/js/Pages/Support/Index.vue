@@ -3,6 +3,22 @@ import AppShell from '@/Layouts/AppShell.vue'
 
 defineOptions({ layout: AppShell })
 
+// Substitua os hrefs pelos links reais dos acessos internos.
+const internalLinks = [
+    {
+        title: 'Parâmetros StandAlone',
+        description: 'Parâmetros StandAlone ZKTeco',
+        href: '#',
+        icon: 'bi bi-sliders',
+    },
+    {
+        title: 'Base de Conhecimento',
+        description: 'Artigos, tutoriais e guias rápidos',
+        href: 'http://base-conhecimento:82/',
+        icon: 'bi bi-book-fill',
+    },
+]
+
 // Substitua os hrefs pelos links reais das ferramentas.
 const tools = [
     {
@@ -50,6 +66,28 @@ function isConfigured(href) {
             <p class="text-sm text-zinc-500 dark:text-zinc-400">Area Tecnica</p>
             <h1 class="mt-1 text-2xl font-semibold tracking-tight">Suporte</h1>
         </div>
+
+        <section class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <a
+                v-for="link in internalLinks"
+                :key="link.title"
+                :href="link.href"
+                :target="isConfigured(link.href) ? '_blank' : null"
+                :rel="isConfigured(link.href) ? 'noopener noreferrer' : null"
+                class="group flex min-h-44 flex-col items-center justify-center rounded-lg border border-zinc-200 bg-white px-6 py-7 text-center shadow-sm transition-colors hover:border-brand-500/60 hover:bg-brand-500/5 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-brand-500/40 dark:hover:bg-brand-500/10"
+                :class="!isConfigured(link.href) ? 'cursor-default' : ''"
+                @click="!isConfigured(link.href) && $event.preventDefault()"
+            >
+                <i :class="link.icon" class="text-4xl leading-none text-brand-700 transition-colors group-hover:text-brand-600 dark:text-brand-400" aria-hidden="true" />
+                <h2 class="mt-5 text-lg font-semibold text-brand-700 dark:text-brand-400">{{ link.title }}</h2>
+                <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{{ link.description }}</p>
+
+                <span class="mt-6 inline-flex items-center gap-1.5 rounded-md bg-brand-700 px-3 py-1.5 text-sm font-semibold text-white transition-colors group-hover:bg-brand-600 dark:bg-brand-600 dark:group-hover:bg-brand-500">
+                    <i class="bi bi-box-arrow-up-right text-[0.8rem] leading-none" aria-hidden="true" />
+                    Acessar
+                </span>
+            </a>
+        </section>
 
         <section class="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
             <header class="flex items-center gap-2 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
