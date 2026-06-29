@@ -18,8 +18,92 @@
 
 :root {
     color-scheme: light;
+    --sidebar-text: var(--color-zinc-500);
+    --sidebar-text-hover: var(--color-zinc-900);
+    --sidebar-hover-bg: var(--color-zinc-100);
+    --sidebar-active-bg: color-mix(in oklch, var(--color-brand-500) 10%, transparent);
+    --sidebar-active-text: var(--color-brand-600);
+    --sidebar-section-title: var(--color-brand-600);
+    --sidebar-accent-border: color-mix(in oklch, var(--color-brand-500) 20%, transparent);
 }
 
 html[data-theme='dark'] {
     color-scheme: dark;
+    --sidebar-text: var(--color-zinc-400);
+    --sidebar-text-hover: var(--color-zinc-100);
+    --sidebar-hover-bg: var(--color-zinc-800);
+    --sidebar-active-bg: color-mix(in oklch, var(--color-brand-500) 15%, transparent);
+    --sidebar-active-text: var(--color-brand-400);
+    --sidebar-section-title: var(--color-brand-500);
+    --sidebar-accent-border: color-mix(in oklch, var(--color-brand-500) 20%, transparent);
+}
+
+.sidebar-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+    padding-inline: 0.75rem;
+    color: var(--sidebar-section-title);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.sidebar-section-icon {
+    width: 0.875rem;
+    flex-shrink: 0;
+    color: inherit;
+    font-size: 0.75rem;
+    line-height: 1;
+    text-align: center;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--sidebar-text);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.sidebar-link:hover {
+    background-color: var(--sidebar-hover-bg);
+    color: var(--sidebar-text-hover);
+}
+
+.sidebar-link.active {
+    background-color: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+    font-weight: 500;
+}
+
+.sidebar-link-accent {
+    border: 1px solid var(--sidebar-accent-border);
+    background-color: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+    font-weight: 500;
+}
+
+.sidebar-link-accent:hover {
+    background-color: color-mix(in oklch, var(--color-brand-500) 15%, transparent);
+    color: var(--sidebar-active-text);
+}
+
+.sidebar-link-accent.active {
+    box-shadow: 0 0 0 1px color-mix(in oklch, var(--color-brand-500) 30%, transparent);
+}
+
+.sidebar-icon {
+    width: 1.125rem;
+    flex-shrink: 0;
+    color: inherit;
+    font-size: 1rem;
+    line-height: 1;
+    text-align: center;
 }

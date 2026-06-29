@@ -53,11 +53,7 @@ Route::middleware('auth')->group(function () {
         'group'       => 'Área Técnica',
     ]))->name('desenvolvimento.index');
 
-    Route::get('/suporte', fn() => Inertia::render('ModulePlaceholder', [
-        'title'       => 'Suporte',
-        'description' => 'Atendimento técnico, chamados abertos e histórico de ocorrências.',
-        'group'       => 'Área Técnica',
-    ]))->name('suporte.index');
+    Route::get('/suporte', fn() => Inertia::render('Support/Index'))->name('suporte.index');
 
     Route::get('/ti', fn() => Inertia::render('ModulePlaceholder', [
         'title'       => 'T.I.',
