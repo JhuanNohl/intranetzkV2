@@ -93,7 +93,7 @@ function submit() {
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
             <section class="space-y-5 rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
                 <div>
-                    <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="title">Titulo</label>
+                    <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="title">Título</label>
                     <input
                         id="title"
                         v-model="form.title"
@@ -197,7 +197,7 @@ function submit() {
                     </div>
 
                     <div v-if="form.source_type === 'content'">
-                        <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="content">Conteudo</label>
+                        <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="content">Conteúdo</label>
                         <textarea
                             id="content"
                             v-model="form.content"
@@ -239,7 +239,7 @@ function submit() {
                         </div>
 
                         <div>
-                            <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="version">Versao</label>
+                            <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="version">Versão</label>
                             <input
                                 id="version"
                                 v-model="form.version"
@@ -250,12 +250,12 @@ function submit() {
 
                         <label class="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                             <input v-model="form.requires_read_confirmation" type="checkbox" class="size-4 rounded border-zinc-300 text-brand-600 focus:ring-brand-500 dark:border-white/20 dark:bg-zinc-950">
-                            Exige confirmacao de leitura
+                            Exige confirmação de leitura
                         </label>
 
                         <label class="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                             <input v-model="form.is_featured" type="checkbox" class="size-4 rounded border-zinc-300 text-brand-600 focus:ring-brand-500 dark:border-white/20 dark:bg-zinc-950">
-                            Destacar documento
+                            Destacar arquivo
                         </label>
                     </div>
                 </section>
@@ -263,7 +263,7 @@ function submit() {
                 <section class="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
                     <div class="space-y-4">
                         <div>
-                            <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="published_at">Publicacao</label>
+                            <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="published_at">Publicação</label>
                             <input
                                 id="published_at"
                                 v-model="form.published_at"
@@ -273,7 +273,7 @@ function submit() {
                         </div>
 
                         <div>
-                            <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="expires_at">Expiracao</label>
+                            <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="expires_at">Expiração</label>
                             <input
                                 id="expires_at"
                                 v-model="form.expires_at"
@@ -286,7 +286,7 @@ function submit() {
                 </section>
 
                 <section class="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-                    <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="visible_department_ids">Departamentos visiveis</label>
+                    <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="visible_department_ids">Departamentos visíveis</label>
                     <select
                         id="visible_department_ids"
                         v-model="form.visible_department_ids"

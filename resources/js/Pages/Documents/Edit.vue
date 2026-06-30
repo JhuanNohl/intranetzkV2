@@ -41,8 +41,8 @@ defineProps({
 
     <div class="space-y-6">
         <div>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400">Documentos</p>
-            <h1 class="mt-1 text-2xl font-semibold tracking-tight">Editar documento</h1>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400">Arquivos</p>
+            <h1 class="mt-1 text-2xl font-semibold tracking-tight">Editar arquivo</h1>
         </div>
 
         <DocumentForm
@@ -55,7 +55,7 @@ defineProps({
             :visibility-options="visibilityOptions"
             :action="`/documents/${document.id}`"
             method="put"
-            submit-label="Salvar alteracoes"
+            submit-label="Salvar alterações"
         />
     </div>
 </template>

@@ -75,7 +75,7 @@ Route::middleware('auth')->group(function () {
                     'id' => $document->id,
                     'title' => $document->title,
                     'summary' => $document->summary,
-                    'department' => $department?->name ?? 'Central de Documentos',
+                    'department' => $department?->name ?? 'Central de Arquivos',
                     'area' => $department?->area?->name,
                     'category' => $document->category?->name,
                     'href' => $target.'?search='.urlencode($document->title),

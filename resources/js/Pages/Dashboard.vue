@@ -9,11 +9,11 @@ const page = usePage()
 const user = computed(() => page.props.auth?.user)
 
 const stats = [
-    { label: 'Documentos',          value: '0', hint: 'Central de Documentos'  },
+    { label: 'Arquivos', value: '0', hint: 'Central de Arquivos' },
 ]
 
 const quickActions = [
-    { label: 'Central de Documentos',desc: 'Ver documentos',   href: '/documents', icon: 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25' },
+    { label: 'Central de Arquivos', desc: 'Ver arquivos', href: '/documents', icon: 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25' },
 ]
 </script>
 
@@ -24,7 +24,7 @@ const quickActions = [
 
         <!-- Greeting -->
         <div>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400">Central operacional</p>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400">INTRANET | ZKTeco</p>
             <h1 class="mt-1 text-2xl font-semibold tracking-tight">Bom dia, {{ user?.name }}</h1>
         </div>
 

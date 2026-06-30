@@ -37,12 +37,12 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Novo documento" />
+    <Head title="Novo arquivo" />
 
     <div class="space-y-6">
         <div>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400">Documentos</p>
-            <h1 class="mt-1 text-2xl font-semibold tracking-tight"> + Novo documento</h1>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400">Arquivos</p>
+            <h1 class="mt-1 text-2xl font-semibold tracking-tight"> + Novo arquivo</h1>
         </div>
 
         <DocumentForm
@@ -54,7 +54,7 @@ defineProps({
             :document-type-options="documentTypeOptions"
             :visibility-options="visibilityOptions"
             action="/documents"
-            submit-label="Criar documento"
+            submit-label="Criar arquivo"
         />
     </div>
 </template>

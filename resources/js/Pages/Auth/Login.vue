@@ -28,7 +28,18 @@ function submit() {
                     </div>
                     <span class="text-sm font-semibold">IntranetZK</span>
                 </div>
-                <h1 class="text-2xl font-semibold tracking-tight">Acesse sua conta</h1>
+                <div class="mb-4 flex items-end gap-4">
+                    <img
+                        :src="'/img/zeca-sorriso.png'"
+                        alt=""
+                        class="h-24 w-24 shrink-0 object-contain"
+                        aria-hidden="true"
+                    >
+                    <div class="min-w-0 pb-2">
+                        <p class="text-sm font-medium text-brand-600 dark:text-brand-400">Bem-vindo</p>
+                        <h1 class="mt-1 text-2xl font-semibold tracking-tight">Acesse sua conta</h1>
+                    </div>
+                </div>
                 <p class="mt-1 text-sm text-zinc-500">Digite suas credenciais para continuar.</p>
             </div>
 

@@ -12,7 +12,7 @@ const props = defineProps({
 })
 
 function destroyDocument() {
-    if (!confirm('Remover este documento?')) return
+    if (!confirm('Remover este arquivo?')) return
 
     router.delete(`/documents/${props.document.id}`)
 }
@@ -39,7 +39,7 @@ function fileBadgeClass(label) {
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
                 <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                    {{ document.department?.name ?? 'Documentos' }}
+                    {{ document.department?.name ?? 'Arquivos' }}
                 </p>
                 <h1 class="mt-1 text-2xl font-semibold tracking-tight">{{ document.title }}</h1>
                 <p v-if="document.summary" class="mt-2 max-w-3xl text-sm text-zinc-500 dark:text-zinc-400">{{ document.summary }}</p>
@@ -101,7 +101,7 @@ function fileBadgeClass(label) {
                 </div>
 
                 <div v-if="!document.content && document.source_type !== 'external' && !document.file_url" class="rounded-lg border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-800">
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Documento sem conteudo anexado.</p>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Arquivo sem conteúdo anexado.</p>
                 </div>
             </section>
 
@@ -117,22 +117,22 @@ function fileBadgeClass(label) {
                             <dd class="mt-1 text-zinc-700 dark:text-zinc-300">{{ document.category?.name ?? '-' }}</dd>
                         </div>
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-zinc-400">Versao</dt>
+                            <dt class="text-xs uppercase tracking-wide text-zinc-400">Versão</dt>
                             <dd class="mt-1 text-zinc-700 dark:text-zinc-300">{{ document.version }}</dd>
                         </div>
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-zinc-400">Publicacao</dt>
+                            <dt class="text-xs uppercase tracking-wide text-zinc-400">Publicação</dt>
                             <dd class="mt-1 text-zinc-700 dark:text-zinc-300">{{ document.published_at ?? '-' }}</dd>
                         </div>
                         <div>
-                            <dt class="text-xs uppercase tracking-wide text-zinc-400">Expiracao</dt>
+                            <dt class="text-xs uppercase tracking-wide text-zinc-400">Expiração</dt>
                             <dd class="mt-1 text-zinc-700 dark:text-zinc-300">{{ document.expires_at ?? '-' }}</dd>
                         </div>
                     </dl>
                 </section>
 
                 <section class="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-                    <h2 class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Departamentos visiveis</h2>
+                    <h2 class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Departamentos visíveis</h2>
                     <div class="mt-3 flex flex-wrap gap-2">
                         <span
                             v-for="department in document.visible_departments"
@@ -146,7 +146,7 @@ function fileBadgeClass(label) {
                 </section>
 
                 <section class="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-                    <h2 class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Versoes</h2>
+                    <h2 class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Versões</h2>
                     <div class="mt-3 space-y-3">
                         <div v-for="version in document.versions" :key="version.id" class="rounded-lg border border-zinc-200 p-3 dark:border-zinc-800">
                             <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">v{{ version.version }}</p>

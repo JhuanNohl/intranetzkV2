@@ -5,7 +5,7 @@ import { router, usePage } from '@inertiajs/vue3'
 const groups = [
     {
         items: [
-            { label: 'Início', href: '/', route: '/', category: 'Principal', icon: 'bi bi-house-door' },
+            { label: 'Início', href: '/', category: 'Principal', icon: 'bi bi-house-door' },
         ],
     },
     {
@@ -13,9 +13,9 @@ const groups = [
         category: 'Corporativo',
         icon: 'bi bi-building',
         items: [
-            { label: 'Comercial',            href: '/comercial',            route: '/comercial',            category: 'Corporativo', icon: 'bi bi-briefcase' },
-            { label: 'Departamento Pessoal', href: '/departamento-pessoal', route: '/departamento-pessoal', category: 'Corporativo', icon: 'bi bi-people' },
-            { label: 'Financeiro',           href: '/financeiro',           route: '/financeiro',           category: 'Corporativo', icon: 'bi bi-currency-dollar' },
+            { label: 'Comercial',            href: '/comercial',            category: 'Corporativo', icon: 'bi bi-briefcase' },
+            { label: 'Departamento Pessoal', href: '/departamento-pessoal', category: 'Corporativo', icon: 'bi bi-people' },
+            { label: 'Financeiro',           href: '/financeiro',           category: 'Corporativo', icon: 'bi bi-currency-dollar' },
         ],
     },
     {
@@ -23,10 +23,10 @@ const groups = [
         category: 'Área Técnica',
         icon: 'bi bi-tools',
         items: [
-            { label: 'Desenvolvimento', href: '/desenvolvimento', route: '/desenvolvimento', category: 'Área Técnica', icon: 'bi bi-code-slash' },
-            { label: 'Suporte',         href: '/suporte',         route: '/suporte',         category: 'Área Técnica', icon: 'bi bi-headset' },
-            { label: 'T.I.',            href: '/ti',              route: '/ti',              category: 'Área Técnica', icon: 'bi bi-display' },
-            { label: 'Treinamentos',    href: '/treinamentos',    route: '/treinamentos',    category: 'Área Técnica', icon: 'bi bi-mortarboard' },
+            { label: 'Desenvolvimento', href: '/desenvolvimento', category: 'Área Técnica', icon: 'bi bi-code-slash' },
+            { label: 'Suporte',         href: '/suporte',         category: 'Área Técnica', icon: 'bi bi-headset' },
+            { label: 'T.I.',            href: '/ti',              category: 'Área Técnica', icon: 'bi bi-display' },
+            { label: 'Treinamentos',    href: '/treinamentos',    category: 'Área Técnica', icon: 'bi bi-mortarboard' },
         ],
     },
     {
@@ -34,9 +34,9 @@ const groups = [
         category: 'Operacional',
         icon: 'bi bi-gear',
         items: [
-            { label: 'Fábrica',    href: '/fabrica',    route: '/fabrica',    category: 'Operacional', icon: 'bi bi-buildings' },
-            { label: 'Manutenção', href: '/manutencao', route: '/manutencao', category: 'Operacional', icon: 'bi bi-wrench-adjustable' },
-            { label: 'Produtos',   href: '/produtos',   route: '/produtos',   category: 'Operacional', icon: 'bi bi-box-seam' },
+            { label: 'Fábrica',    href: '/fabrica',    category: 'Operacional', icon: 'bi bi-buildings' },
+            { label: 'Manutenção', href: '/manutencao', category: 'Operacional', icon: 'bi bi-wrench-adjustable' },
+            { label: 'Produtos',   href: '/produtos',   category: 'Operacional', icon: 'bi bi-box-seam' },
         ],
     },
 ]
@@ -60,7 +60,7 @@ const menuGroups = computed(() => groups.map(group => ({
 })))
 const searchableItems = computed(() => [
     ...groups.flatMap(group => group.items),
-    { label: 'Central de Documentos', href: '/documents', route: '/documents', category: 'Documentos', icon: 'bi bi-book' },
+    { label: 'Central de Arquivos', href: '/documents', category: 'Arquivos', icon: 'bi bi-book' },
 ])
 const previewMenuItems = computed(() => {
     const term = normalizeSearch(globalSearch.value)
@@ -203,7 +203,7 @@ function logout() {
     <div class="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
 
         <!-- Sidebar -->
-        <aside class="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 xl:flex">
+        <aside class="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 xl:flex">
 
             <!-- Logo -->
             <div class="flex h-20 items-center border-b border-zinc-200 px-4 dark:border-zinc-800">
@@ -251,7 +251,7 @@ function logout() {
             <div class="border-t border-zinc-200 px-3 py-3 dark:border-zinc-800">
                 <p class="sidebar-section-title mb-2">
                     <i class="bi bi-journal-text sidebar-section-icon" aria-hidden="true" />
-                    Documentos
+                    Arquivos
                 </p>
 
                 <Link
@@ -261,97 +261,111 @@ function logout() {
                     :aria-current="isActive('/documents') && !isActive('/documents/create') ? 'page' : null"
                 >
                     <i class="bi bi-book sidebar-icon" aria-hidden="true" />
-                    Central de Documentos
+                    <span class="min-w-0 flex-1">Central de Arquivos</span>
+                    <img
+                        :src="'/img/zeca-pensativo.png'"
+                        alt=""
+                        class="-my-2 h-10 w-10 shrink-0 object-contain"
+                        aria-hidden="true"
+                    >
                 </Link>
             </div>
         </aside>
 
         <!-- Main -->
-        <div class="xl:pl-56">
+        <div class="xl:pl-64">
 
             <!-- Header -->
-            <header class="sticky top-0 z-10 border-b border-zinc-200 bg-white/90 px-6 py-3 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
-                <div class="flex items-center justify-between gap-4">
+            <header class="sticky top-0 z-10 h-20 border-b border-zinc-200 bg-white/90 px-6 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
+                <div class="flex h-full items-center justify-between gap-4">
 
                     <!-- Search -->
-                    <form
-                        class="relative flex w-72 items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-500 transition focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/15 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
-                        role="search"
-                        @submit.prevent="submitGlobalSearch"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0015.803 15.803z" />
-                        </svg>
-                        <input
-                            ref="searchInput"
-                            v-model="globalSearch"
-                            type="search"
-                            class="min-w-0 flex-1 bg-transparent text-sm text-zinc-700 outline-none placeholder:text-zinc-400 dark:text-zinc-200 dark:placeholder:text-zinc-500"
-                            placeholder="Buscar no IntranetZK..."
-                            aria-label="Buscar documentos ou setores"
-                            @focus="globalSearch.trim().length >= 2 && (searchOpen = true)"
-                            @keydown.escape="searchOpen = false"
+                    <div class="flex min-w-0 items-center gap-3">
+                        <form
+                            class="relative flex w-72 max-w-[calc(100vw-2rem)] items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-500 transition focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/15 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400"
+                            role="search"
+                            @submit.prevent="submitGlobalSearch"
                         >
-                        <kbd class="ml-auto rounded border border-zinc-200 px-1.5 py-0.5 text-xs dark:border-zinc-700 dark:text-zinc-600">Ctrl K</kbd>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0015.803 15.803z" />
+                            </svg>
+                            <input
+                                ref="searchInput"
+                                v-model="globalSearch"
+                                type="search"
+                                class="min-w-0 flex-1 bg-transparent text-sm text-zinc-700 outline-none placeholder:text-zinc-400 dark:text-zinc-200 dark:placeholder:text-zinc-500"
+                                placeholder="Buscar no IntranetZK..."
+                                aria-label="Buscar arquivos ou setores"
+                                @focus="globalSearch.trim().length >= 2 && (searchOpen = true)"
+                                @keydown.escape="searchOpen = false"
+                            >
+                            <kbd class="ml-auto rounded border border-zinc-200 px-1.5 py-0.5 text-xs dark:border-zinc-700 dark:text-zinc-600">Ctrl K</kbd>
 
-                        <div
-                            v-if="searchOpen"
-                            ref="searchPanel"
-                            class="absolute left-0 top-full z-30 mt-2 w-[30rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
-                        >
-                            <div v-if="searchLoading" class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
-                                Buscando...
-                            </div>
+                            <div
+                                v-if="searchOpen"
+                                ref="searchPanel"
+                                class="absolute left-0 top-full z-30 mt-2 w-[30rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
+                            >
+                                <div v-if="searchLoading" class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                                    Buscando...
+                                </div>
 
-                            <div v-else-if="hasSearchPreview" class="max-h-96 overflow-y-auto py-2">
-                                <div v-if="searchPreview.documents.length" class="px-2">
-                                    <p class="px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-brand-600 dark:text-brand-400">
-                                        Documentos encontrados
-                                    </p>
-                                    <button
-                                        v-for="document in searchPreview.documents"
-                                        :key="document.id"
-                                        type="button"
-                                        class="group flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left transition-all hover:-translate-y-0.5 hover:bg-brand-500/5 hover:shadow-sm active:translate-y-0 dark:hover:bg-brand-500/10"
-                                        @click="visitSearchResult(document.href)"
-                                    >
-                                        <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-500/10 text-brand-700 transition-transform group-hover:scale-105 dark:text-brand-400">
-                                            <i class="bi bi-file-earmark-text text-lg leading-none" aria-hidden="true" />
-                                        </span>
-                                        <span class="min-w-0 flex-1">
-                                            <span class="block truncate text-sm font-medium text-zinc-900 transition-colors group-hover:text-brand-700 dark:text-zinc-100 dark:group-hover:text-brand-400">{{ document.title }}</span>
-                                            <span class="mt-0.5 block truncate text-xs text-zinc-500 dark:text-zinc-400">
-                                                {{ document.department }}<template v-if="document.category"> / {{ document.category }}</template>
+                                <div v-else-if="hasSearchPreview" class="max-h-96 overflow-y-auto py-2">
+                                    <div v-if="searchPreview.documents.length" class="px-2">
+                                        <p class="px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-brand-600 dark:text-brand-400">
+                                            Arquivos encontrados
+                                        </p>
+                                        <button
+                                            v-for="document in searchPreview.documents"
+                                            :key="document.id"
+                                            type="button"
+                                            class="group flex w-full items-start gap-3 rounded-lg px-2 py-2 text-left transition-all hover:-translate-y-0.5 hover:bg-brand-500/5 hover:shadow-sm active:translate-y-0 dark:hover:bg-brand-500/10"
+                                            @click="visitSearchResult(document.href)"
+                                        >
+                                            <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-500/10 text-brand-700 transition-transform group-hover:scale-105 dark:text-brand-400">
+                                                <i class="bi bi-file-earmark-text text-lg leading-none" aria-hidden="true" />
                                             </span>
-                                        </span>
-                                    </button>
+                                            <span class="min-w-0 flex-1">
+                                                <span class="block truncate text-sm font-medium text-zinc-900 transition-colors group-hover:text-brand-700 dark:text-zinc-100 dark:group-hover:text-brand-400">{{ document.title }}</span>
+                                                <span class="mt-0.5 block truncate text-xs text-zinc-500 dark:text-zinc-400">
+                                                    {{ document.department }}<template v-if="document.category"> / {{ document.category }}</template>
+                                                </span>
+                                            </span>
+                                        </button>
+                                    </div>
+
+                                    <div v-if="previewMenuItems.length" class="mt-2 border-t border-zinc-100 px-2 pt-2 dark:border-zinc-800">
+                                        <p class="px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+                                            Setores e atalhos
+                                        </p>
+                                        <button
+                                            v-for="item in previewMenuItems"
+                                            :key="item.href"
+                                            type="button"
+                                            class="group flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-all hover:-translate-y-0.5 hover:bg-zinc-100 hover:shadow-sm active:translate-y-0 dark:hover:bg-zinc-800"
+                                            @click="visitSearchResult(item.href)"
+                                        >
+                                            <i :class="item.icon" class="w-5 shrink-0 text-center text-zinc-500 transition-colors group-hover:text-brand-700 dark:text-zinc-400 dark:group-hover:text-brand-400" aria-hidden="true" />
+                                            <span class="min-w-0">
+                                                <span class="block truncate text-sm font-medium text-zinc-900 transition-colors group-hover:text-brand-700 dark:text-zinc-100 dark:group-hover:text-brand-400">{{ item.label }}</span>
+                                                <span class="block truncate text-xs text-zinc-500 dark:text-zinc-400">{{ item.category }}</span>
+                                            </span>
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div v-if="previewMenuItems.length" class="mt-2 border-t border-zinc-100 px-2 pt-2 dark:border-zinc-800">
-                                    <p class="px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
-                                        Setores e atalhos
-                                    </p>
-                                    <button
-                                        v-for="item in previewMenuItems"
-                                        :key="item.href"
-                                        type="button"
-                                        class="group flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-all hover:-translate-y-0.5 hover:bg-zinc-100 hover:shadow-sm active:translate-y-0 dark:hover:bg-zinc-800"
-                                        @click="visitSearchResult(item.href)"
-                                    >
-                                        <i :class="item.icon" class="w-5 shrink-0 text-center text-zinc-500 transition-colors group-hover:text-brand-700 dark:text-zinc-400 dark:group-hover:text-brand-400" aria-hidden="true" />
-                                        <span class="min-w-0">
-                                            <span class="block truncate text-sm font-medium text-zinc-900 transition-colors group-hover:text-brand-700 dark:text-zinc-100 dark:group-hover:text-brand-400">{{ item.label }}</span>
-                                            <span class="block truncate text-xs text-zinc-500 dark:text-zinc-400">{{ item.category }}</span>
-                                        </span>
-                                    </button>
+                                <div v-else class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                                    Nenhum arquivo ou setor encontrado.
                                 </div>
                             </div>
-
-                            <div v-else class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
-                                Nenhum documento ou setor encontrado.
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                        <img
+                            :src="'/img/zeca-investigador.png'"
+                            alt=""
+                            class="hidden h-14 w-14 shrink-0 object-contain md:block"
+                            aria-hidden="true"
+                        >
+                    </div>
 
                     <!-- Actions -->
                     <div class="flex items-center gap-1">

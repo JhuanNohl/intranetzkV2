@@ -227,7 +227,7 @@ class DocumentController extends Controller
             'size_bytes' => $document->size_bytes,
             'external_url' => $document->external_url,
             'content' => $document->content,
-            'change_summary' => 'Versao inicial',
+            'change_summary' => 'Versão inicial',
             'created_by' => $userId,
         ]);
     }
