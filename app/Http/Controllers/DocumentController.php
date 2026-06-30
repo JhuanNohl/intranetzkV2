@@ -12,17 +12,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DocumentController extends Controller
 {
+    private const FIXED_CONTENT_DEPARTMENT_SLUGS = ['ti', 't-i', 'manutencao', 'fabrica'];
+
     public function index(Request $request, ?Department $department = null): Response
     {
         $filters = $request->only(['search', 'department_id', 'category_id', 'status', 'source_type']);
 
         $documents = Document::query()
             ->with(['department.area', 'category', 'creator'])
+            ->whereDoesntHave('department', fn ($query) => $query->whereIn('slug', self::FIXED_CONTENT_DEPARTMENT_SLUGS))
             ->when($department, function ($query) use ($department) {
                 $query->where(function ($query) use ($department) {
                     $query->where('department_id', $department->id)
@@ -60,7 +64,10 @@ class DocumentController extends Controller
     public function create(Request $request): Response
     {
         $department = $request->filled('department_id')
-            ? Department::query()->with('area')->find($request->integer('department_id'))
+            ? Department::query()
+                ->with('area')
+                ->whereNotIn('slug', self::FIXED_CONTENT_DEPARTMENT_SLUGS)
+                ->find($request->integer('department_id'))
             : null;
 
         return Inertia::render('Documents/Create', [
@@ -186,6 +193,8 @@ class DocumentController extends Controller
 
     private function documentData(StoreDocumentRequest|UpdateDocumentRequest $request): array
     {
+        $this->ensureDocumentDepartmentCanUseCrud($request);
+
         return [
             'department_id' => $request->filled('department_id') ? $request->integer('department_id') : null,
             'document_category_id' => $request->filled('document_category_id') ? $request->integer('document_category_id') : null,
@@ -237,6 +246,10 @@ class DocumentController extends Controller
         $syncData = collect($departmentIds)
             ->filter()
             ->unique()
+            ->reject(fn ($id) => Department::query()
+                ->whereKey((int) $id)
+                ->whereIn('slug', self::FIXED_CONTENT_DEPARTMENT_SLUGS)
+                ->exists())
             ->mapWithKeys(fn ($id) => [(int) $id => ['permission' => 'view']])
             ->all();
 
@@ -423,6 +436,7 @@ class DocumentController extends Controller
     {
         return Department::query()
             ->with('area')
+            ->whereNotIn('slug', self::FIXED_CONTENT_DEPARTMENT_SLUGS)
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get()
@@ -433,6 +447,7 @@ class DocumentController extends Controller
     {
         return DocumentCategory::query()
             ->with('department')
+            ->whereDoesntHave('department', fn ($query) => $query->whereIn('slug', self::FIXED_CONTENT_DEPARTMENT_SLUGS))
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get()
@@ -473,17 +488,17 @@ class DocumentController extends Controller
         return [
             ['value' => 'upload', 'label' => 'Arquivo'],
             ['value' => 'external', 'label' => 'Link externo'],
-            ['value' => 'content', 'label' => 'Conteudo interno'],
+            ['value' => 'content', 'label' => 'Conteúdo interno'],
         ];
     }
 
     private function documentTypeOptions(): array
     {
         return [
-            ['value' => 'policy', 'label' => 'Politica'],
+            ['value' => 'policy', 'label' => 'Política'],
             ['value' => 'procedure', 'label' => 'Procedimento'],
             ['value' => 'manual', 'label' => 'Manual'],
-            ['value' => 'form', 'label' => 'Formulario'],
+            ['value' => 'form', 'label' => 'Formulário'],
             ['value' => 'other', 'label' => 'Outro'],
         ];
     }
@@ -493,7 +508,25 @@ class DocumentController extends Controller
         return [
             ['value' => 'department', 'label' => 'Departamento'],
             ['value' => 'shared', 'label' => 'Compartilhado'],
-            ['value' => 'public', 'label' => 'Publico'],
+            ['value' => 'public', 'label' => 'Público'],
         ];
+    }
+
+    private function ensureDocumentDepartmentCanUseCrud(StoreDocumentRequest|UpdateDocumentRequest $request): void
+    {
+        if (! $request->filled('department_id')) {
+            return;
+        }
+
+        $isFixedContentDepartment = Department::query()
+            ->whereKey($request->integer('department_id'))
+            ->whereIn('slug', self::FIXED_CONTENT_DEPARTMENT_SLUGS)
+            ->exists();
+
+        if ($isFixedContentDepartment) {
+            throw ValidationException::withMessages([
+                'department_id' => 'O setor de T.I. utiliza conteúdo fixo e não aceita arquivos pelo CRUD.',
+            ]);
+        }
     }
 }

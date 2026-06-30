@@ -191,11 +191,11 @@ function fileBadgeClass(label) {
                     <thead class="bg-zinc-50 text-left text-xs uppercase tracking-wide text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
                         <tr>
                             <th class="px-4 py-3 font-medium">Arquivo</th>
-                            <th class="px-4 py-3 font-medium">Departamento</th>
-                            <th class="px-4 py-3 font-medium">Categoria</th>
-                            <th class="px-4 py-3 font-medium">Status</th>
-                            <th class="px-4 py-3 font-medium">Atualizado</th>
-                            <th class="px-4 py-3 text-right font-medium">Ações</th>
+                            <th class="px-4 py-3 text-center font-medium">Departamento</th>
+                            <th class="px-4 py-3 text-center font-medium">Categoria</th>
+                            <th class="px-4 py-3 text-center font-medium">Status</th>
+                            <th class="px-4 py-3 text-center font-medium">Atualizado</th>
+                            <th class="px-4 py-3 text-center font-medium">Ações</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -225,16 +225,16 @@ function fileBadgeClass(label) {
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-4 py-3 text-zinc-600 dark:text-zinc-300">{{ document.department?.name ?? '-' }}</td>
-                            <td class="px-4 py-3 text-zinc-600 dark:text-zinc-300">{{ document.category?.name ?? '-' }}</td>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3 text-center text-zinc-600 dark:text-zinc-300">{{ document.department?.name ?? '-' }}</td>
+                            <td class="px-4 py-3 text-center text-zinc-600 dark:text-zinc-300">{{ document.category?.name ?? '-' }}</td>
+                            <td class="px-4 py-3 text-center">
                                 <span class="rounded-full px-2 py-1 text-xs font-medium" :class="badgeClass(document.status)">
                                     {{ document.status }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-zinc-500 dark:text-zinc-400">{{ document.updated_at }}</td>
-                            <td class="px-4 py-3 text-right">
-                                <div class="flex justify-end gap-2">
+                            <td class="px-4 py-3 text-center text-zinc-500 dark:text-zinc-400">{{ document.updated_at }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex justify-center gap-2">
                                     <Link :href="`/documents/${document.id}`" class="rounded-lg px-2 py-1 text-xs font-medium text-zinc-600 transition hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800">
                                         Abrir
                                     </Link>

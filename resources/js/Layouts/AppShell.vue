@@ -11,7 +11,6 @@ const groups = [
     {
         label: 'Corporativo',
         category: 'Corporativo',
-        icon: 'bi bi-building',
         items: [
             { label: 'Comercial',            href: '/comercial',            category: 'Corporativo', icon: 'bi bi-briefcase' },
             { label: 'Departamento Pessoal', href: '/departamento-pessoal', category: 'Corporativo', icon: 'bi bi-people' },
@@ -21,7 +20,6 @@ const groups = [
     {
         label: 'Área Técnica',
         category: 'Área Técnica',
-        icon: 'bi bi-tools',
         items: [
             { label: 'Desenvolvimento', href: '/desenvolvimento', category: 'Área Técnica', icon: 'bi bi-code-slash' },
             { label: 'Suporte',         href: '/suporte',         category: 'Área Técnica', icon: 'bi bi-headset' },
@@ -32,7 +30,6 @@ const groups = [
     {
         label: 'Operacional',
         category: 'Operacional',
-        icon: 'bi bi-gear',
         items: [
             { label: 'Fábrica',    href: '/fabrica',    category: 'Operacional', icon: 'bi bi-buildings' },
             { label: 'Manutenção', href: '/manutencao', category: 'Operacional', icon: 'bi bi-wrench-adjustable' },
@@ -226,10 +223,12 @@ function logout() {
                 <div v-for="group in menuGroups" :key="group.label ?? '_root'">
                     <p
                         v-if="group.label"
-                        class="sidebar-section-title"
+                        class="sidebar-section-title justify-center text-center"
                     >
-                        <i :class="group.icon" class="sidebar-section-icon" aria-hidden="true" />
-                        {{ group.label }}
+                        <span class="inline-flex min-w-0 items-center justify-center gap-2">
+                            <i :class="group.icon" class="sidebar-section-icon" aria-hidden="true" />
+                            <span class="truncate">{{ group.label }}</span>
+                        </span>
                     </p>
                     <div class="space-y-0.5">
                         <Link
@@ -241,7 +240,7 @@ function logout() {
                             :aria-current="item.current ? 'page' : null"
                         >
                             <i :class="item.icon" class="sidebar-icon" aria-hidden="true" />
-                            {{ item.label }}
+                            <span class="min-w-0 flex-1">{{ item.label }}</span>
                         </Link>
                     </div>
                 </div>
@@ -249,9 +248,11 @@ function logout() {
 
             <!-- Documents -->
             <div class="border-t border-zinc-200 px-3 py-3 dark:border-zinc-800">
-                <p class="sidebar-section-title mb-2">
-                    <i class="bi bi-journal-text sidebar-section-icon" aria-hidden="true" />
-                    Arquivos
+                <p class="sidebar-section-title mb-2 justify-center text-center">
+                    <span class="inline-flex min-w-0 items-center justify-center gap-2">
+                        <i class="sidebar-section-icon" aria-hidden="true" />
+                        <span class="truncate">Arquivos</span>
+                    </span>
                 </p>
 
                 <Link

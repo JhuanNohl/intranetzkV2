@@ -20,7 +20,7 @@ function submit() {
     <main class="grid min-h-screen place-items-center bg-zinc-50 px-6 py-10 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
         <section class="w-full max-w-sm">
             <div class="mb-8">
-                <div class="mb-5 flex items-center gap-3">
+                <div class="mb-5 flex items-center justify-center gap-3">
                     <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
@@ -28,19 +28,19 @@ function submit() {
                     </div>
                     <span class="text-sm font-semibold">IntranetZK</span>
                 </div>
-                <div class="mb-4 flex items-end gap-4">
+                <div class="mb-4 flex flex-col items-center gap-3 text-center">
                     <img
                         :src="'/img/zeca-sorriso.png'"
                         alt=""
                         class="h-24 w-24 shrink-0 object-contain"
                         aria-hidden="true"
                     >
-                    <div class="min-w-0 pb-2">
+                    <div class="min-w-0">
                         <p class="text-sm font-medium text-brand-600 dark:text-brand-400">Bem-vindo</p>
                         <h1 class="mt-1 text-2xl font-semibold tracking-tight">Acesse sua conta</h1>
                     </div>
                 </div>
-                <p class="mt-1 text-sm text-zinc-500">Digite suas credenciais para continuar.</p>
+                <p class="mt-1 text-center text-sm text-zinc-500">Digite suas credenciais para continuar.</p>
             </div>
 
             <form class="space-y-5" @submit.prevent="submit">

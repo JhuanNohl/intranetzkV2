@@ -33,7 +33,7 @@ const quickActions = [
             <div
                 v-for="stat in stats"
                 :key="stat.label"
-                class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900"
+                class="rounded-xl border border-zinc-200 bg-white p-5 text-center dark:border-zinc-800 dark:bg-zinc-900"
             >
                 <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ stat.label }}</p>
                 <p class="mt-2 text-3xl font-semibold tabular-nums">{{ stat.value }}</p>
@@ -49,7 +49,7 @@ const quickActions = [
                     v-for="action in quickActions"
                     :key="action.label"
                     :href="action.href"
-                    class="group flex items-center gap-3 rounded-lg border border-zinc-200 p-3 transition-colors hover:border-brand-500/30 hover:bg-brand-500/5 dark:border-zinc-800 dark:hover:border-brand-500/20 dark:hover:bg-brand-500/5"
+                    class="group flex flex-col items-center justify-center gap-2 rounded-lg border border-zinc-200 p-3 text-center transition-colors hover:border-brand-500/30 hover:bg-brand-500/5 dark:border-zinc-800 dark:hover:border-brand-500/20 dark:hover:bg-brand-500/5"
                 >
                     <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 transition-colors group-hover:bg-brand-500/10 dark:bg-zinc-800 dark:group-hover:bg-brand-500/10">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-zinc-500 transition-colors group-hover:text-brand-600 dark:text-zinc-400 dark:group-hover:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" v-html="action.icon" />

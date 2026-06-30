@@ -63,7 +63,7 @@ function isConfigured(href) {
 
     <div class="space-y-6">
         <div>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400">Area Tecnica</p>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400">Área Técnica</p>
             <h1 class="mt-1 text-2xl font-semibold tracking-tight">Suporte</h1>
         </div>
 

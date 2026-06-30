@@ -14,7 +14,11 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/departments/{department:slug}/documents', [DocumentController::class, 'index'])
+    Route::get('/departments/{department:slug}/documents', function (Request $request, Department $department) {
+        abort_if(in_array($department->slug, ['ti', 't-i', 'manutencao', 'fabrica'], true), 404);
+
+        return app(DocumentController::class)->index($request, $department);
+    })
         ->name('departments.documents.index');
 
     Route::resource('documents', DocumentController::class);
@@ -42,7 +46,6 @@ Route::middleware('auth')->group(function () {
             'financeiro' => '/financeiro',
             'desenvolvimento' => '/desenvolvimento',
             'suporte' => '/suporte',
-            'ti', 't-i' => '/ti',
             'treinamentos' => '/treinamentos',
             'fabrica' => '/fabrica',
             'manutencao' => '/manutencao',
@@ -60,6 +63,7 @@ Route::middleware('auth')->group(function () {
 
         $documents = Document::query()
             ->with(['department.area', 'category'])
+            ->whereDoesntHave('department', fn ($query) => $query->whereIn('slug', ['ti', 't-i']))
             ->where(function ($query) use ($search) {
                 $query->where('title', 'ilike', "%{$search}%")
                     ->orWhere('summary', 'ilike', "%{$search}%");
@@ -98,11 +102,11 @@ Route::middleware('auth')->group(function () {
     // Area Tecnica
     Route::get('/desenvolvimento', $departmentDocuments('desenvolvimento'))->name('desenvolvimento.index');
     Route::get('/suporte', fn () => Inertia::render('Support/Index'))->name('suporte.index');
-    Route::get('/ti', $departmentDocuments(['ti', 't-i']))->name('ti.index');
+    Route::get('/ti', fn () => Inertia::render('TI/Index'))->name('ti.index');
     Route::get('/treinamentos', $departmentDocuments('treinamentos'))->name('treinamentos.index');
 
     // Operacional
-    Route::get('/fabrica', $departmentDocuments('fabrica'))->name('fabrica.index');
-    Route::get('/manutencao', $departmentDocuments('manutencao'))->name('manutencao.index');
+    Route::get('/fabrica', fn () => Inertia::render('Fabrica/Index'))->name('fabrica.index');
+    Route::get('/manutencao', fn () => Inertia::render('Manutencao/Index'))->name('manutencao.index');
     Route::get('/produtos', $departmentDocuments('produtos'))->name('produtos.index');
 });
