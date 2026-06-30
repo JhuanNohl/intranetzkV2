@@ -162,7 +162,6 @@ function submit() {
 
                 <div class="space-y-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
                     <div>
-                        <label class="text-sm font-medium text-zinc-800 dark:text-zinc-100" for="source_type">Origem</label>
                         <select
                             id="source_type"
                             v-model="form.source_type"

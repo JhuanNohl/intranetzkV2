@@ -42,7 +42,7 @@ defineProps({
     <div class="space-y-6">
         <div>
             <p class="text-sm text-zinc-500 dark:text-zinc-400">Documentos</p>
-            <h1 class="mt-1 text-2xl font-semibold tracking-tight">Novo documento</h1>
+            <h1 class="mt-1 text-2xl font-semibold tracking-tight"> + Novo documento</h1>
         </div>
 
         <DocumentForm

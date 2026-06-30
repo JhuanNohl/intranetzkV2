@@ -16,6 +16,20 @@ function destroyDocument() {
 
     router.delete(`/documents/${props.document.id}`)
 }
+
+function fileBadgeClass(label) {
+    const normalized = (label || '').toLowerCase()
+
+    if (['pdf'].includes(normalized)) return 'bg-red-500/10 text-red-700 dark:bg-red-500/15 dark:text-red-300'
+    if (['doc', 'docx'].includes(normalized)) return 'bg-blue-500/10 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300'
+    if (['xls', 'xlsx', 'csv'].includes(normalized)) return 'bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+    if (['xml'].includes(normalized)) return 'bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+    if (['html'].includes(normalized)) return 'bg-orange-500/10 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300'
+    if (['png', 'jpg', 'jpeg'].includes(normalized)) return 'bg-violet-500/10 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'
+    if (['link'].includes(normalized)) return 'bg-sky-500/10 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300'
+
+    return 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
+}
 </script>
 
 <template>
@@ -43,19 +57,43 @@ function destroyDocument() {
 
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
             <section class="space-y-5 rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-                <div v-if="document.source_type === 'upload' && document.file_url">
-                    <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Arquivo</p>
-                    <a :href="document.file_url" target="_blank" class="mt-2 inline-flex rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
-                        Abrir arquivo
-                    </a>
-                    <p class="mt-2 text-xs text-zinc-500 dark:text-zinc-400">{{ document.original_filename }}</p>
+                <div v-if="document.source_type === 'upload' && document.file_url" class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
+                            :class="fileBadgeClass(document.file_meta?.label)"
+                            :title="document.file_meta?.type"
+                        >
+                            <i :class="document.file_meta?.icon ?? 'bi bi-file-earmark'" class="text-3xl leading-none" aria-hidden="true" />
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Arquivo</p>
+                                <span class="rounded-full px-2 py-0.5 text-[11px] font-medium" :class="fileBadgeClass(document.file_meta?.label)">
+                                    {{ document.file_meta?.label ?? 'ARQ' }}
+                                </span>
+                            </div>
+                            <p class="mt-1 truncate text-sm text-zinc-500 dark:text-zinc-400">{{ document.original_filename }}</p>
+                            <a :href="document.file_url" target="_blank" class="mt-3 inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200">
+                                <i class="bi bi-box-arrow-up-right text-sm leading-none" aria-hidden="true" />
+                                Abrir arquivo
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
-                <div v-else-if="document.source_type === 'external' && document.external_url">
-                    <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Link externo</p>
-                    <a :href="document.external_url" target="_blank" class="mt-2 break-all text-sm font-medium text-brand-700 dark:text-brand-400">
-                        {{ document.external_url }}
-                    </a>
+                <div v-else-if="document.source_type === 'external' && document.external_url" class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl" :class="fileBadgeClass(document.file_meta?.label)">
+                            <i :class="document.file_meta?.icon ?? 'bi bi-link-45deg'" class="text-3xl leading-none" aria-hidden="true" />
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Link externo</p>
+                            <a :href="document.external_url" target="_blank" class="mt-2 block break-all text-sm font-medium text-brand-700 dark:text-brand-400">
+                                {{ document.external_url }}
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
                 <div v-if="document.content" class="prose prose-sm max-w-none whitespace-pre-line text-zinc-700 dark:text-zinc-300">

@@ -1,6 +1,6 @@
 <script setup>
 import AppShell from '@/Layouts/AppShell.vue'
-import { router } from '@inertiajs/vue3'
+import { router, usePage } from '@inertiajs/vue3'
 import { reactive } from 'vue'
 
 defineOptions({ layout: AppShell })
@@ -43,10 +43,11 @@ const form = reactive({
     status: props.filters.status ?? '',
     source_type: props.filters.source_type ?? '',
 })
+const page = usePage()
 
 function applyFilters() {
     const url = props.selectedDepartment
-        ? `/departments/${props.selectedDepartment.slug}/documents`
+        ? page.url.split('?')[0]
         : '/documents'
 
     router.get(url, form, {
@@ -71,6 +72,40 @@ function badgeClass(status) {
         archived: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
     }[status] ?? 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
 }
+
+function fileBadgeClass(label) {
+    const normalized = (label || '').toLowerCase()
+
+    if (['pdf'].includes(normalized)) {
+        return 'bg-red-500/10 text-red-700 dark:bg-red-500/15 dark:text-red-300'
+    }
+
+    if (['doc', 'docx'].includes(normalized)) {
+        return 'bg-blue-500/10 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300'
+    }
+
+    if (['xls', 'xlsx', 'csv'].includes(normalized)) {
+        return 'bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+    }
+
+    if (['xml'].includes(normalized)) {
+        return 'bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+    }
+
+    if (['html'].includes(normalized)) {
+        return 'bg-orange-500/10 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300'
+    }
+
+    if (['png', 'jpg', 'jpeg'].includes(normalized)) {
+        return 'bg-violet-500/10 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'
+    }
+
+    if (['link'].includes(normalized)) {
+        return 'bg-sky-500/10 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300'
+    }
+
+    return 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
+}
 </script>
 
 <template>
@@ -80,7 +115,7 @@ function badgeClass(status) {
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
                 <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                    {{ selectedDepartment ? selectedDepartment.name : 'Base de conhecimento' }}
+                    {{ selectedDepartment ? selectedDepartment.name : 'Central de Documentos' }}
                 </p>
                 <h1 class="mt-1 text-2xl font-semibold tracking-tight">Documentos</h1>
             </div>
@@ -89,24 +124,30 @@ function badgeClass(status) {
                 :href="selectedDepartment ? `/documents/create?department_id=${selectedDepartment.id}` : '/documents/create'"
                 class="inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700"
             >
-                Novo documento
+                + Novo documento
             </Link>
         </div>
 
         <section class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-            <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
-                <input
-                    v-model="form.search"
-                    type="search"
-                    placeholder="Buscar"
-                    class="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
-                    @keydown.enter="applyFilters"
-                >
+            <div
+                class="grid grid-cols-1 gap-3"
+                :class="selectedDepartment ? 'md:grid-cols-3' : 'md:grid-cols-4'"
+            >
+                <div class="relative">
+                    <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-400" aria-hidden="true" />
+                    <input
+                        v-model="form.search"
+                        type="search"
+                        :placeholder="selectedDepartment ? `Buscar em ${selectedDepartment.name}` : 'Buscar documentos'"
+                        class="w-full rounded-lg border border-zinc-200 bg-white py-2.5 pl-9 pr-3 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
+                        @keydown.enter="applyFilters"
+                    >
+                </div>
 
                 <select
                     v-if="!selectedDepartment"
                     v-model="form.department_id"
-                    class="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
+                    class="rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
                 >
                     <option value="">Departamento</option>
                     <option v-for="department in departments" :key="department.id" :value="department.id">
@@ -116,7 +157,7 @@ function badgeClass(status) {
 
                 <select
                     v-model="form.category_id"
-                    class="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
+                    class="rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
                 >
                     <option value="">Categoria</option>
                     <option v-for="category in categories" :key="category.id" :value="category.id">
@@ -126,26 +167,16 @@ function badgeClass(status) {
 
                 <select
                     v-model="form.status"
-                    class="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
+                    class="rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
                 >
                     <option value="">Status</option>
                     <option v-for="option in statusOptions" :key="option.value" :value="option.value">
                         {{ option.label }}
                     </option>
                 </select>
-
-                <select
-                    v-model="form.source_type"
-                    class="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
-                >
-                    <option value="">Origem</option>
-                    <option v-for="option in sourceTypeOptions" :key="option.value" :value="option.value">
-                        {{ option.label }}
-                    </option>
-                </select>
             </div>
 
-            <div class="mt-3 flex justify-end gap-2">
+            <div class="mt-4 flex justify-end gap-2">
                 <button type="button" class="rounded-lg px-3 py-2 text-sm text-zinc-500 transition hover:bg-zinc-100 dark:hover:bg-zinc-800" @click="clearFilters">
                     Limpar
                 </button>
@@ -174,10 +205,31 @@ function badgeClass(status) {
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                        <tr v-for="document in documents.data" :key="document.id">
+                        <tr
+                            v-for="document in documents.data"
+                            :key="document.id"
+                            class="group transition-colors hover:bg-brand-500/[0.03] dark:hover:bg-brand-500/[0.06]"
+                        >
                             <td class="max-w-sm px-4 py-3">
-                                <p class="truncate font-medium text-zinc-900 dark:text-zinc-100">{{ document.title }}</p>
-                                <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ document.summary || 'Sem resumo' }}</p>
+                                <div class="flex items-start gap-3">
+                                    <div
+                                        class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-transform group-hover:scale-105"
+                                        :class="fileBadgeClass(document.file_meta?.label)"
+                                        :title="document.file_meta?.type"
+                                    >
+                                        <i :class="document.file_meta?.icon ?? 'bi bi-file-earmark'" class="text-xl leading-none" aria-hidden="true" />
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="truncate font-medium text-zinc-900 transition-colors group-hover:text-brand-700 dark:text-zinc-100 dark:group-hover:text-brand-400">{{ document.title }}</p>
+                                        <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ document.summary || 'Sem resumo' }}</p>
+                                        <span
+                                            class="mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium"
+                                            :class="fileBadgeClass(document.file_meta?.label)"
+                                        >
+                                            {{ document.file_meta?.label ?? 'ARQ' }}
+                                        </span>
+                                    </div>
+                                </div>
                             </td>
                             <td class="px-4 py-3 text-zinc-600 dark:text-zinc-300">{{ document.department?.name ?? '-' }}</td>
                             <td class="px-4 py-3 text-zinc-600 dark:text-zinc-300">{{ document.category?.name ?? '-' }}</td>
@@ -192,9 +244,22 @@ function badgeClass(status) {
                                     <Link :href="`/documents/${document.id}`" class="rounded-lg px-2 py-1 text-xs font-medium text-zinc-600 transition hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800">
                                         Abrir
                                     </Link>
+                                    <p>|</p>
                                     <Link :href="`/documents/${document.id}/edit`" class="rounded-lg px-2 py-1 text-xs font-medium text-brand-700 transition hover:bg-brand-500/10 dark:text-brand-400">
                                         Editar
                                     </Link>
+                                    <p>|</p>
+                                    <a
+                                        v-if="document.file_url"
+                                        :href="document.file_url"
+                                        :download="document.original_filename || true"
+                                        class="inline-flex h-7 w-7 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                                        :title="`Baixar ${document.original_filename || 'arquivo'}`"
+                                        aria-label="Baixar arquivo"
+                                    >
+                                        <i class="bi bi-download text-sm leading-none" aria-hidden="true" />
+                                    </a>
+
                                 </div>
                             </td>
                         </tr>

@@ -23,7 +23,12 @@ class DocumentController extends Controller
 
         $documents = Document::query()
             ->with(['department.area', 'category', 'creator'])
-            ->when($department, fn ($query) => $query->where('department_id', $department->id))
+            ->when($department, function ($query) use ($department) {
+                $query->where(function ($query) use ($department) {
+                    $query->where('department_id', $department->id)
+                        ->orWhereHas('visibleDepartments', fn ($query) => $query->whereKey($department->id));
+                });
+            })
             ->when(! $department && $request->filled('department_id'), fn ($query) => $query->where('department_id', $request->integer('department_id')))
             ->when($request->filled('category_id'), fn ($query) => $query->where('document_category_id', $request->integer('category_id')))
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
@@ -268,10 +273,78 @@ class DocumentController extends Controller
             'version' => $document->version,
             'is_featured' => $document->is_featured,
             'updated_at' => optional($document->updated_at)->format('d/m/Y H:i'),
+            'file_meta' => $this->documentFileMeta($document),
+            'file_url' => $document->file_path ? Storage::disk('public')->url($document->file_path) : null,
+            'original_filename' => $document->original_filename,
             'department' => $document->department ? $this->departmentOption($document->department) : null,
             'category' => $document->category ? $this->categoryOption($document->category) : null,
             'creator' => $document->creator?->name,
         ];
+    }
+
+    private function documentFileMeta(Document $document): array
+    {
+        if ($document->source_type === 'external') {
+            return [
+                'label' => 'LINK',
+                'type' => 'Link externo',
+                'icon' => 'bi bi-link-45deg',
+                'class' => 'bg-sky-500/10 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+            ];
+        }
+
+        if ($document->source_type === 'content') {
+            return [
+                'label' => 'TXT',
+                'type' => 'Texto interno',
+                'icon' => 'bi bi-file-text',
+                'class' => 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
+            ];
+        }
+
+        $extension = Str::lower(pathinfo((string) $document->original_filename, PATHINFO_EXTENSION));
+        $mimeType = Str::lower((string) $document->mime_type);
+
+        $types = [
+            'pdf' => ['PDF', 'Arquivo PDF', 'bi bi-file-earmark-pdf', 'bg-red-500/10 text-red-700 dark:bg-red-500/15 dark:text-red-300'],
+            'doc' => ['DOC', 'Documento Word', 'bi bi-file-earmark-word', 'bg-blue-500/10 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300'],
+            'docx' => ['DOCX', 'Documento Word', 'bi bi-file-earmark-word', 'bg-blue-500/10 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300'],
+            'txt' => ['TXT', 'Arquivo de texto', 'bi bi-filetype-txt', 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'],
+            'xls' => ['XLS', 'Planilha Excel', 'bi bi-file-earmark-excel', 'bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'],
+            'xlsx' => ['XLSX', 'Planilha Excel', 'bi bi-file-earmark-excel', 'bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'],
+            'csv' => ['CSV', 'Arquivo CSV', 'bi bi-filetype-csv', 'bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'],
+            'xml' => ['XML', 'Arquivo XML', 'bi bi-filetype-xml', 'bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'],
+            'html' => ['HTML', 'Arquivo HTML', 'bi bi-filetype-html', 'bg-orange-500/10 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300'],
+            'htm' => ['HTML', 'Arquivo HTML', 'bi bi-filetype-html', 'bg-orange-500/10 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300'],
+            'png' => ['PNG', 'Imagem PNG', 'bi bi-file-earmark-image', 'bg-violet-500/10 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'],
+            'jpg' => ['JPG', 'Imagem JPG', 'bi bi-file-earmark-image', 'bg-violet-500/10 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'],
+            'jpeg' => ['JPG', 'Imagem JPG', 'bi bi-file-earmark-image', 'bg-violet-500/10 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'],
+        ];
+
+        if (! $extension && str_contains($mimeType, 'pdf')) {
+            $extension = 'pdf';
+        } elseif (! $extension && str_contains($mimeType, 'word')) {
+            $extension = 'docx';
+        } elseif (! $extension && (str_contains($mimeType, 'excel') || str_contains($mimeType, 'spreadsheet'))) {
+            $extension = 'xlsx';
+        } elseif (! $extension && str_contains($mimeType, 'image/')) {
+            $extension = 'png';
+        } elseif (! $extension && str_contains($mimeType, 'xml')) {
+            $extension = 'xml';
+        } elseif (! $extension && str_contains($mimeType, 'html')) {
+            $extension = 'html';
+        } elseif (! $extension && str_contains($mimeType, 'text/')) {
+            $extension = 'txt';
+        }
+
+        [$label, $type, $icon, $class] = $types[$extension] ?? [
+            $extension ? Str::upper($extension) : 'ARQ',
+            'Arquivo',
+            'bi bi-file-earmark',
+            'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
+        ];
+
+        return compact('label', 'type', 'icon', 'class');
     }
 
     private function documentDetail(Document $document): array

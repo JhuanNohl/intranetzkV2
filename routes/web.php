@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use Inertia\Inertia;
 use App\Http\Controllers\DocumentController;
+use App\Models\Department;
+use App\Models\Document;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
@@ -22,67 +25,84 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 
 Route::middleware('auth')->group(function () {
+    $departmentDocuments = function (string|array $slugs) {
+        return function () use ($slugs) {
+            $department = Department::query()
+                ->whereIn('slug', (array) $slugs)
+                ->firstOrFail();
 
-    Route::get('/', fn() => Inertia::render('Dashboard'))->name('dashboard');
+            return app(DocumentController::class)->index(request(), $department);
+        };
+    };
 
-    Route::get('/meu-perfil', fn() => Inertia::render('Profile/Show'))->name('profile.show');
+    $departmentUrl = function (?string $slug): string {
+        return match ($slug) {
+            'comercial' => '/comercial',
+            'departamento-pessoal' => '/departamento-pessoal',
+            'financeiro' => '/financeiro',
+            'desenvolvimento' => '/desenvolvimento',
+            'suporte' => '/suporte',
+            'ti', 't-i' => '/ti',
+            'treinamentos' => '/treinamentos',
+            'fabrica' => '/fabrica',
+            'manutencao' => '/manutencao',
+            'produtos' => '/produtos',
+            default => '/documents',
+        };
+    };
+
+    Route::get('/search/preview', function (Request $request) use ($departmentUrl) {
+        $search = trim((string) $request->query('search', ''));
+
+        if (mb_strlen($search) < 2) {
+            return response()->json(['documents' => []]);
+        }
+
+        $documents = Document::query()
+            ->with(['department.area', 'category'])
+            ->where(function ($query) use ($search) {
+                $query->where('title', 'ilike', "%{$search}%")
+                    ->orWhere('summary', 'ilike', "%{$search}%");
+            })
+            ->latest('updated_at')
+            ->limit(6)
+            ->get()
+            ->map(function (Document $document) use ($departmentUrl) {
+                $department = $document->department;
+                $target = $departmentUrl($department?->slug);
+
+                return [
+                    'id' => $document->id,
+                    'title' => $document->title,
+                    'summary' => $document->summary,
+                    'department' => $department?->name ?? 'Central de Documentos',
+                    'area' => $department?->area?->name,
+                    'category' => $document->category?->name,
+                    'href' => $target.'?search='.urlencode($document->title),
+                ];
+            })
+            ->values();
+
+        return response()->json(['documents' => $documents]);
+    })->name('search.preview');
+
+    Route::get('/', fn () => Inertia::render('Dashboard'))->name('dashboard');
+
+    Route::get('/meu-perfil', fn () => Inertia::render('Profile/Show'))->name('profile.show');
 
     // Corporativo
-    Route::get('/comercial', fn() => Inertia::render('ModulePlaceholder', [
-        'title'       => 'Comercial',
-        'description' => 'Gestão de oportunidades, clientes e funil de vendas.',
-        'group'       => 'Corporativo',
-    ]))->name('comercial.index');
+    Route::get('/comercial', $departmentDocuments('comercial'))->name('comercial.index');
+    Route::get('/departamento-pessoal', $departmentDocuments('departamento-pessoal'))->name('dp.index');
+    Route::get('/financeiro', $departmentDocuments('financeiro'))->name('financeiro.index');
 
-    Route::get('/departamento-pessoal', fn() => Inertia::render('ModulePlaceholder', [
-        'title'       => 'Departamento Pessoal',
-        'description' => 'Admissões, férias, folha de pagamento e documentação de colaboradores.',
-        'group'       => 'Corporativo',
-    ]))->name('dp.index');
-
-    Route::get('/financeiro', fn() => Inertia::render('ModulePlaceholder', [
-        'title'       => 'Financeiro',
-        'description' => 'Contas a pagar, a receber, fluxo de caixa e relatórios financeiros.',
-        'group'       => 'Corporativo',
-    ]))->name('financeiro.index');
-
-    // Área Técnica
-    Route::get('/desenvolvimento', fn() => Inertia::render('ModulePlaceholder', [
-        'title'       => 'Desenvolvimento',
-        'description' => 'Projetos de software, versionamento, deploys e documentação técnica.',
-        'group'       => 'Área Técnica',
-    ]))->name('desenvolvimento.index');
-
-    Route::get('/suporte', fn() => Inertia::render('Support/Index'))->name('suporte.index');
-
-    Route::get('/ti', fn() => Inertia::render('ModulePlaceholder', [
-        'title'       => 'T.I.',
-        'description' => 'Infraestrutura, ativos, acessos e gestão de ambiente tecnológico.',
-        'group'       => 'Área Técnica',
-    ]))->name('ti.index');
-
-    Route::get('/treinamentos', fn() => Inertia::render('ModulePlaceholder', [
-        'title'       => 'Treinamentos',
-        'description' => 'Trilhas de aprendizado, certificações e histórico de capacitações.',
-        'group'       => 'Área Técnica',
-    ]))->name('treinamentos.index');
+    // Area Tecnica
+    Route::get('/desenvolvimento', $departmentDocuments('desenvolvimento'))->name('desenvolvimento.index');
+    Route::get('/suporte', fn () => Inertia::render('Support/Index'))->name('suporte.index');
+    Route::get('/ti', $departmentDocuments(['ti', 't-i']))->name('ti.index');
+    Route::get('/treinamentos', $departmentDocuments('treinamentos'))->name('treinamentos.index');
 
     // Operacional
-    Route::get('/fabrica', fn() => Inertia::render('ModulePlaceholder', [
-        'title'       => 'Fábrica',
-        'description' => 'Controle de produção, ordens de serviço e indicadores de chão de fábrica.',
-        'group'       => 'Operacional',
-    ]))->name('fabrica.index');
-
-    Route::get('/manutencao', fn() => Inertia::render('ModulePlaceholder', [
-        'title'       => 'Manutenção',
-        'description' => 'Planos de manutenção preventiva, corretiva e histórico de equipamentos.',
-        'group'       => 'Operacional',
-    ]))->name('manutencao.index');
-
-    Route::get('/produtos', fn() => Inertia::render('ModulePlaceholder', [
-        'title'       => 'Produtos',
-        'description' => 'Catálogo, especificações técnicas e ciclo de vida de produtos.',
-        'group'       => 'Operacional',
-    ]))->name('produtos.index');
+    Route::get('/fabrica', $departmentDocuments('fabrica'))->name('fabrica.index');
+    Route::get('/manutencao', $departmentDocuments('manutencao'))->name('manutencao.index');
+    Route::get('/produtos', $departmentDocuments('produtos'))->name('produtos.index');
 });
