@@ -26,17 +26,12 @@ const props = defineProps({
         type: Array,
         required: true,
     },
-    statusOptions: {
-        type: Array,
-        required: true,
-    },
 })
 
 const form = reactive({
     search: props.filters.search ?? '',
     department_id: props.filters.department_id ?? '',
     category_id: props.filters.category_id ?? '',
-    status: props.filters.status ?? '',
 })
 const page = usePage()
 
@@ -55,16 +50,7 @@ function clearFilters() {
     form.search = ''
     form.department_id = ''
     form.category_id = ''
-    form.status = ''
     applyFilters()
-}
-
-function badgeClass(status) {
-    return {
-        draft: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
-        published: 'bg-brand-500/10 text-brand-700 dark:bg-brand-500/15 dark:text-brand-400',
-        archived: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
-    }[status] ?? 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
 }
 
 function fileBadgeClass(label) {
@@ -125,7 +111,7 @@ function fileBadgeClass(label) {
         <section class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
             <div
                 class="grid grid-cols-1 gap-3"
-                :class="selectedDepartment ? 'md:grid-cols-3' : 'md:grid-cols-4'"
+                :class="selectedDepartment ? 'md:grid-cols-2' : 'md:grid-cols-3'"
             >
                 <div class="relative">
                     <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-400" aria-hidden="true" />
@@ -159,15 +145,6 @@ function fileBadgeClass(label) {
                     </option>
                 </select>
 
-                <select
-                    v-model="form.status"
-                    class="rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
-                >
-                    <option value="">Status</option>
-                    <option v-for="option in statusOptions" :key="option.value" :value="option.value">
-                        {{ option.label }}
-                    </option>
-                </select>
             </div>
 
             <div class="mt-4 flex justify-end gap-2">
@@ -193,7 +170,6 @@ function fileBadgeClass(label) {
                             <th class="px-4 py-3 font-medium">Arquivo</th>
                             <th class="px-4 py-3 text-center font-medium">Departamento</th>
                             <th class="px-4 py-3 text-center font-medium">Categoria</th>
-                            <th class="px-4 py-3 text-center font-medium">Status</th>
                             <th class="px-4 py-3 text-center font-medium">Atualizado</th>
                             <th class="px-4 py-3 text-center font-medium">Ações</th>
                         </tr>
@@ -205,16 +181,15 @@ function fileBadgeClass(label) {
                             class="group transition-colors hover:bg-brand-500/[0.03] dark:hover:bg-brand-500/[0.06]"
                         >
                             <td class="max-w-sm px-4 py-3">
-                                <div class="flex items-start gap-3">
+                                <Link :href="`/documents/${document.id}`" class="flex items-start gap-3 cursor-pointer" :title="`Abrir ${document.title}`">
                                     <div
                                         class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-transform group-hover:scale-105"
                                         :class="fileBadgeClass(document.file_meta?.label)"
-                                        :title="document.file_meta?.type"
                                     >
                                         <i :class="document.file_meta?.icon ?? 'bi bi-file-earmark'" class="text-xl leading-none" aria-hidden="true" />
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="truncate font-medium text-zinc-900 transition-colors group-hover:text-brand-700 dark:text-zinc-100 dark:group-hover:text-brand-400">{{ document.title }}</p>
+                                        <p class="truncate font-medium text-zinc-900 transition-colors group-hover:text-brand-700 group-hover:underline dark:text-zinc-100 dark:group-hover:text-brand-400">{{ document.title }}</p>
                                         <p class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ document.summary || 'Sem resumo' }}</p>
                                         <span
                                             class="mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium"
@@ -223,15 +198,10 @@ function fileBadgeClass(label) {
                                             {{ document.file_meta?.label ?? 'ARQ' }}
                                         </span>
                                     </div>
-                                </div>
+                                </Link>
                             </td>
                             <td class="px-4 py-3 text-center text-zinc-600 dark:text-zinc-300">{{ document.department?.name ?? '-' }}</td>
                             <td class="px-4 py-3 text-center text-zinc-600 dark:text-zinc-300">{{ document.category?.name ?? '-' }}</td>
-                            <td class="px-4 py-3 text-center">
-                                <span class="rounded-full px-2 py-1 text-xs font-medium" :class="badgeClass(document.status)">
-                                    {{ document.status }}
-                                </span>
-                            </td>
                             <td class="px-4 py-3 text-center text-zinc-500 dark:text-zinc-400">{{ document.updated_at }}</td>
                             <td class="px-4 py-3 text-center">
                                 <div class="flex justify-center gap-2">
@@ -244,16 +214,15 @@ function fileBadgeClass(label) {
                                     </Link>
                                     <p>|</p>
                                     <a
-                                        v-if="document.file_url"
-                                        :href="document.file_url"
-                                        :download="document.original_filename || true"
+                                        :href="document.file_url || '#'"
+                                        :download="document.file_url ? (document.original_filename || true) : undefined"
                                         class="inline-flex h-7 w-7 items-center justify-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                                        :class="{ 'invisible pointer-events-none': !document.file_url }"
                                         :title="`Baixar ${document.original_filename || 'arquivo'}`"
                                         aria-label="Baixar arquivo"
                                     >
                                         <i class="bi bi-download text-sm leading-none" aria-hidden="true" />
                                     </a>
-
                                 </div>
                             </td>
                         </tr>

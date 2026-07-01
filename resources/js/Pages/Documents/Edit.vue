@@ -17,19 +17,7 @@ defineProps({
         type: Array,
         required: true,
     },
-    statusOptions: {
-        type: Array,
-        required: true,
-    },
     sourceTypeOptions: {
-        type: Array,
-        required: true,
-    },
-    documentTypeOptions: {
-        type: Array,
-        required: true,
-    },
-    visibilityOptions: {
         type: Array,
         required: true,
     },
@@ -49,13 +37,9 @@ defineProps({
             :document="document"
             :departments="departments"
             :categories="categories"
-            :status-options="statusOptions"
             :source-type-options="sourceTypeOptions"
-            :document-type-options="documentTypeOptions"
-            :visibility-options="visibilityOptions"
             :action="`/documents/${document.id}`"
             method="put"
-            submit-label="Salvar alterações"
         />
     </div>
 </template>

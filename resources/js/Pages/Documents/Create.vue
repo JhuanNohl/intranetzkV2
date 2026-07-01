@@ -17,19 +17,7 @@ defineProps({
         type: Array,
         required: true,
     },
-    statusOptions: {
-        type: Array,
-        required: true,
-    },
     sourceTypeOptions: {
-        type: Array,
-        required: true,
-    },
-    documentTypeOptions: {
-        type: Array,
-        required: true,
-    },
-    visibilityOptions: {
         type: Array,
         required: true,
     },
@@ -42,19 +30,15 @@ defineProps({
     <div class="space-y-6">
         <div>
             <p class="text-sm text-zinc-500 dark:text-zinc-400">Arquivos</p>
-            <h1 class="mt-1 text-2xl font-semibold tracking-tight"> + Novo arquivo</h1>
+            <h1 class="mt-1 text-2xl font-semibold tracking-tight">+ Novo arquivo</h1>
         </div>
 
         <DocumentForm
             :document="document"
             :departments="departments"
             :categories="categories"
-            :status-options="statusOptions"
             :source-type-options="sourceTypeOptions"
-            :document-type-options="documentTypeOptions"
-            :visibility-options="visibilityOptions"
             action="/documents"
-            submit-label="Criar arquivo"
         />
     </div>
 </template>

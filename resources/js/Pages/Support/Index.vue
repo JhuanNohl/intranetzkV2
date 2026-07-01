@@ -8,7 +8,7 @@ const internalLinks = [
     {
         title: 'Parâmetros StandAlone',
         description: 'Parâmetros StandAlone ZKTeco',
-        href: '#',
+        href: 'http://192.168.16.103:3000/',
         icon: 'bi bi-sliders',
     },
     {

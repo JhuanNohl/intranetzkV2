@@ -46,6 +46,7 @@ const globalSearch = ref('')
 const searchPreview = ref({ documents: [] })
 const searchLoading = ref(false)
 const searchOpen = ref(false)
+const currentTheme = ref('dark')
 let searchTimer = null
 const menuGroups = computed(() => groups.map(group => ({
     ...group,
@@ -176,6 +177,7 @@ watch(globalSearch, () => {
 })
 
 onMounted(() => {
+    currentTheme.value = document.documentElement.dataset.theme || 'dark'
     window.addEventListener('keydown', focusGlobalSearch)
     window.addEventListener('click', closeSearchPreview)
 })
@@ -188,6 +190,7 @@ onBeforeUnmount(() => {
 function toggleTheme() {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
     document.documentElement.dataset.theme = next
+    currentTheme.value = next
     localStorage.setItem('intranetzk.theme', next)
 }
 
@@ -374,13 +377,15 @@ function logout() {
                         <!-- Theme -->
                         <button
                             type="button"
-                            class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+                            class="group cursor-pointer rounded-lg p-2 text-zinc-400 transition-all duration-200 hover:-translate-y-0.5 hover:bg-zinc-100 hover:text-amber-500 hover:shadow-sm active:translate-y-0 dark:hover:bg-zinc-800 dark:hover:text-sky-300"
                             @click="toggleTheme"
                             title="Alternar tema"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                            </svg>
+                            <i
+                                :class="currentTheme === 'dark' ? 'bi bi-moon' : 'bi bi-sun'"
+                                class="block h-5 w-5 text-center text-xl leading-5 transition-transform duration-200 group-hover:rotate-12 group-hover:scale-110"
+                                aria-hidden="true"
+                            />
                         </button>
 
                         <!-- Bell -->

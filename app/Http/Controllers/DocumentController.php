@@ -20,13 +20,20 @@ class DocumentController extends Controller
 {
     private const FIXED_CONTENT_DEPARTMENT_SLUGS = ['ti', 't-i', 'manutencao', 'fabrica'];
 
-    public function index(Request $request, ?Department $department = null): Response
+    public function index(Request $request, ?Department $department = null, string $page = 'Documents/Index'): Response
     {
-        $filters = $request->only(['search', 'department_id', 'category_id', 'status', 'source_type']);
+        $filters = $request->only(['search', 'department_id', 'category_id', 'source_type']);
 
         $documents = Document::query()
             ->with(['department.area', 'category', 'creator'])
             ->whereDoesntHave('department', fn ($query) => $query->whereIn('slug', self::FIXED_CONTENT_DEPARTMENT_SLUGS))
+            ->where(function ($query) use ($request) {
+                $query->where('visibility', 'public')
+                    ->orWhere(function ($query) use ($request) {
+                        $query->where('visibility', 'department')
+                            ->where('department_id', $request->user()?->department_id);
+                    });
+            })
             ->when($department, function ($query) use ($department) {
                 $query->where(function ($query) use ($department) {
                     $query->where('department_id', $department->id)
@@ -35,7 +42,6 @@ class DocumentController extends Controller
             })
             ->when(! $department && $request->filled('department_id'), fn ($query) => $query->where('department_id', $request->integer('department_id')))
             ->when($request->filled('category_id'), fn ($query) => $query->where('document_category_id', $request->integer('category_id')))
-            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
             ->when($request->filled('source_type'), fn ($query) => $query->where('source_type', $request->input('source_type')))
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
@@ -50,13 +56,12 @@ class DocumentController extends Controller
             ->withQueryString()
             ->through(fn (Document $document) => $this->documentSummary($document));
 
-        return Inertia::render('Documents/Index', [
+        return Inertia::render($page, [
             'documents' => $documents,
             'filters' => $filters,
             'selectedDepartment' => $department ? $this->departmentOption($department->loadMissing('area')) : null,
             'departments' => $this->departmentOptions(),
             'categories' => $this->categoryOptions(),
-            'statusOptions' => $this->statusOptions(),
             'sourceTypeOptions' => $this->sourceTypeOptions(),
         ]);
     }
@@ -74,10 +79,7 @@ class DocumentController extends Controller
             'document' => $this->blankDocument($department),
             'departments' => $this->departmentOptions(),
             'categories' => $this->categoryOptions(),
-            'statusOptions' => $this->statusOptions(),
             'sourceTypeOptions' => $this->sourceTypeOptions(),
-            'documentTypeOptions' => $this->documentTypeOptions(),
-            'visibilityOptions' => $this->visibilityOptions(),
         ]);
     }
 
@@ -111,6 +113,8 @@ class DocumentController extends Controller
 
     public function show(Document $document): Response
     {
+        $this->ensureDocumentIsVisibleToUser($document);
+
         $document->load(['department.area', 'category', 'creator', 'updater', 'approver', 'visibleDepartments', 'versions.creator']);
 
         return Inertia::render('Documents/Show', [
@@ -120,16 +124,15 @@ class DocumentController extends Controller
 
     public function edit(Document $document): Response
     {
+        $this->ensureDocumentIsVisibleToUser($document);
+
         $document->load(['visibleDepartments']);
 
         return Inertia::render('Documents/Edit', [
             'document' => $this->documentFormData($document),
             'departments' => $this->departmentOptions(),
             'categories' => $this->categoryOptions(),
-            'statusOptions' => $this->statusOptions(),
             'sourceTypeOptions' => $this->sourceTypeOptions(),
-            'documentTypeOptions' => $this->documentTypeOptions(),
-            'visibilityOptions' => $this->visibilityOptions(),
         ]);
     }
 
@@ -202,12 +205,12 @@ class DocumentController extends Controller
             'summary' => $request->input('summary'),
             'content' => $request->input('content'),
             'source_type' => $request->input('source_type'),
-            'document_type' => $request->input('document_type'),
+            'document_type' => 'other',
             'external_url' => $request->input('source_type') === 'external' ? $request->input('external_url') : null,
             'status' => $request->input('status'),
             'visibility' => $request->input('visibility'),
-            'version' => $request->input('version', '1.0'),
-            'requires_read_confirmation' => $request->boolean('requires_read_confirmation'),
+            'version' => '1.0',
+            'requires_read_confirmation' => false,
             'is_featured' => $request->boolean('is_featured'),
             'published_at' => $request->input('published_at'),
             'expires_at' => $request->input('expires_at'),
@@ -283,7 +286,6 @@ class DocumentController extends Controller
             'visibility' => $document->visibility,
             'source_type' => $document->source_type,
             'document_type' => $document->document_type,
-            'version' => $document->version,
             'is_featured' => $document->is_featured,
             'updated_at' => optional($document->updated_at)->format('d/m/Y H:i'),
             'file_meta' => $this->documentFileMeta($document),
@@ -370,18 +372,9 @@ class DocumentController extends Controller
             'original_filename' => $document->original_filename,
             'mime_type' => $document->mime_type,
             'size_bytes' => $document->size_bytes,
-            'requires_read_confirmation' => $document->requires_read_confirmation,
             'published_at' => optional($document->published_at)->format('d/m/Y H:i'),
             'expires_at' => optional($document->expires_at)->format('d/m/Y H:i'),
             'visible_departments' => $document->visibleDepartments->map(fn (Department $department) => $this->departmentOption($department))->values(),
-            'versions' => $document->versions->map(fn ($version) => [
-                'id' => $version->id,
-                'version' => $version->version,
-                'title' => $version->title,
-                'change_summary' => $version->change_summary,
-                'creator' => $version->creator?->name,
-                'created_at' => optional($version->created_at)->format('d/m/Y H:i'),
-            ])->values(),
         ];
     }
 
@@ -399,12 +392,10 @@ class DocumentController extends Controller
             'external_url' => $document->external_url,
             'status' => $document->status,
             'visibility' => $document->visibility,
-            'version' => $document->version,
-            'requires_read_confirmation' => $document->requires_read_confirmation,
             'is_featured' => $document->is_featured,
             'published_at' => optional($document->published_at)->format('Y-m-d\TH:i'),
             'expires_at' => optional($document->expires_at)->format('Y-m-d\TH:i'),
-            'visible_department_ids' => $document->visibleDepartments->pluck('id')->values(),
+            'visible_department_ids' => [],
             'original_filename' => $document->original_filename,
         ];
     }
@@ -422,8 +413,6 @@ class DocumentController extends Controller
             'external_url' => '',
             'status' => 'draft',
             'visibility' => 'department',
-            'version' => '1.0',
-            'requires_read_confirmation' => false,
             'is_featured' => false,
             'published_at' => '',
             'expires_at' => '',
@@ -474,41 +463,12 @@ class DocumentController extends Controller
         ];
     }
 
-    private function statusOptions(): array
-    {
-        return [
-            ['value' => 'draft', 'label' => 'Rascunho'],
-            ['value' => 'published', 'label' => 'Publicado'],
-            ['value' => 'archived', 'label' => 'Arquivado'],
-        ];
-    }
-
     private function sourceTypeOptions(): array
     {
         return [
             ['value' => 'upload', 'label' => 'Arquivo'],
             ['value' => 'external', 'label' => 'Link externo'],
             ['value' => 'content', 'label' => 'Conteúdo interno'],
-        ];
-    }
-
-    private function documentTypeOptions(): array
-    {
-        return [
-            ['value' => 'policy', 'label' => 'Política'],
-            ['value' => 'procedure', 'label' => 'Procedimento'],
-            ['value' => 'manual', 'label' => 'Manual'],
-            ['value' => 'form', 'label' => 'Formulário'],
-            ['value' => 'other', 'label' => 'Outro'],
-        ];
-    }
-
-    private function visibilityOptions(): array
-    {
-        return [
-            ['value' => 'department', 'label' => 'Departamento'],
-            ['value' => 'shared', 'label' => 'Compartilhado'],
-            ['value' => 'public', 'label' => 'Público'],
         ];
     }
 
@@ -528,5 +488,20 @@ class DocumentController extends Controller
                 'department_id' => 'O setor de T.I. utiliza conteúdo fixo e não aceita arquivos pelo CRUD.',
             ]);
         }
+    }
+
+    private function ensureDocumentIsVisibleToUser(Document $document): void
+    {
+        if ($document->visibility === 'public') {
+            return;
+        }
+
+        $user = request()->user();
+
+        $isVisible = $document->created_by === $user?->id
+            || $document->department_id === $user?->department_id
+            || $document->visibleDepartments()->whereKey($user?->department_id)->exists();
+
+        abort_unless($isVisible, 403);
     }
 }

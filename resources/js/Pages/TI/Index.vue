@@ -1,6 +1,6 @@
 <script setup>
 import AppShell from '@/Layouts/AppShell.vue'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 defineOptions({ layout: AppShell })
 
@@ -75,40 +75,32 @@ const infoCards = [
             { type: 'download-box', text: 'Você pode baixar a versão mais recente do Teamviewer no link abaixo.', href: '#' },
         ],
         modalFooter: {
-            downloadHref: '#',
+            downloadHref: 'https://www.teamviewer.com/pt-br/download/windows/',
             downloadText: 'Baixar Teamviewer',
             downloadIcon: 'bi bi-cloud-arrow-down-fill',
         },
     },
 ]
 
-const sankhyaCard = {
-    title: 'Sankhya®',
-    description: 'Link para o ERP',
-    action: 'Acessar',
-    href: '#',
-    icon: 'bi bi-browser-chrome',
-}
-
 const sankhyaLinks = [
     {
         title: 'Sankhya® ERP - Produção',
         description: 'Acesso direto ao sistema',
-        href: '#',
+        href: 'http://zkteco.snk.ativy.com:40049/mge/',
         icon: 'bi bi-link-45deg',
         actionIcon: 'bi bi-box-arrow-up-right',
     },
     {
         title: 'Navegador Sankhya®',
         description: 'Download e acesso ao portal',
-        href: '#',
+        href: 'https://login.sankhya.com.br/?redirect_to=http://downloads.sankhya.com.br/auth/callback.php&application_id=28',
         icon: 'bi bi-download',
         actionIcon: 'bi bi-box-arrow-up-right',
     },
 ]
 
 const activeModal = ref(null)
-const cards = computed(() => [...infoCards, sankhyaCard])
+const cards = infoCards
 
 function isConfigured(href) {
     return href && href !== '#'
@@ -132,7 +124,7 @@ function closeModal() {
             <h1 class="mt-1 text-2xl font-semibold tracking-tight">Tecnologia da Informação</h1>
         </div>
 
-        <section class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <section class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             <component
                 :is="card.href ? 'a' : 'button'"
                 v-for="card in cards"

@@ -29,13 +29,13 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 
 Route::middleware('auth')->group(function () {
-    $departmentDocuments = function (string|array $slugs) {
-        return function () use ($slugs) {
+    $departmentDocuments = function (string|array $slugs, string $page = 'Documents/Index') {
+        return function () use ($slugs, $page) {
             $department = Department::query()
                 ->whereIn('slug', (array) $slugs)
                 ->firstOrFail();
 
-            return app(DocumentController::class)->index(request(), $department);
+            return app(DocumentController::class)->index(request(), $department, $page);
         };
     };
 
@@ -64,6 +64,13 @@ Route::middleware('auth')->group(function () {
         $documents = Document::query()
             ->with(['department.area', 'category'])
             ->whereDoesntHave('department', fn ($query) => $query->whereIn('slug', ['ti', 't-i']))
+            ->where(function ($query) use ($request) {
+                $query->where('visibility', 'public')
+                    ->orWhere(function ($query) use ($request) {
+                        $query->where('visibility', 'department')
+                            ->where('department_id', $request->user()?->department_id);
+                    });
+            })
             ->where(function ($query) use ($search) {
                 $query->where('title', 'ilike', "%{$search}%")
                     ->orWhere('summary', 'ilike', "%{$search}%");
@@ -95,18 +102,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/meu-perfil', fn () => Inertia::render('Profile/Show'))->name('profile.show');
 
     // Corporativo
-    Route::get('/comercial', $departmentDocuments('comercial'))->name('comercial.index');
-    Route::get('/departamento-pessoal', $departmentDocuments('departamento-pessoal'))->name('dp.index');
-    Route::get('/financeiro', $departmentDocuments('financeiro'))->name('financeiro.index');
+    Route::get('/comercial', $departmentDocuments('comercial', 'Comercial/Index'))->name('comercial.index');
+    Route::get('/departamento-pessoal', $departmentDocuments('departamento-pessoal', 'DepartamentoPessoal/Index'))->name('dp.index');
+    Route::get('/financeiro', $departmentDocuments('financeiro', 'Financeiro/Index'))->name('financeiro.index');
 
     // Area Tecnica
-    Route::get('/desenvolvimento', $departmentDocuments('desenvolvimento'))->name('desenvolvimento.index');
+    Route::get('/desenvolvimento', $departmentDocuments('desenvolvimento', 'Desenvolvimento/Index'))->name('desenvolvimento.index');
     Route::get('/suporte', fn () => Inertia::render('Support/Index'))->name('suporte.index');
     Route::get('/ti', fn () => Inertia::render('TI/Index'))->name('ti.index');
-    Route::get('/treinamentos', $departmentDocuments('treinamentos'))->name('treinamentos.index');
+    Route::get('/treinamentos', $departmentDocuments('treinamentos', 'Treinamentos/Index'))->name('treinamentos.index');
 
     // Operacional
     Route::get('/fabrica', fn () => Inertia::render('Fabrica/Index'))->name('fabrica.index');
     Route::get('/manutencao', fn () => Inertia::render('Manutencao/Index'))->name('manutencao.index');
-    Route::get('/produtos', $departmentDocuments('produtos'))->name('produtos.index');
+    Route::get('/produtos', $departmentDocuments('produtos', 'Produtos/Index'))->name('produtos.index');
 });
