@@ -46,6 +46,8 @@ const globalSearch = ref('')
 const searchPreview = ref({ documents: [] })
 const searchLoading = ref(false)
 const searchOpen = ref(false)
+const userMenuOpen = ref(false)
+const userMenuPanel = ref(null)
 const currentTheme = ref('dark')
 let searchTimer = null
 const menuGroups = computed(() => groups.map(group => ({
@@ -164,6 +166,16 @@ function closeSearchPreview(event) {
     }
 }
 
+function toggleUserMenu() {
+    userMenuOpen.value = !userMenuOpen.value
+}
+
+function closeUserMenu(event) {
+    if (!userMenuPanel.value?.contains(event.target)) {
+        userMenuOpen.value = false
+    }
+}
+
 function focusGlobalSearch(event) {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault()
@@ -180,11 +192,13 @@ onMounted(() => {
     currentTheme.value = document.documentElement.dataset.theme || 'dark'
     window.addEventListener('keydown', focusGlobalSearch)
     window.addEventListener('click', closeSearchPreview)
+    window.addEventListener('click', closeUserMenu)
 })
 onBeforeUnmount(() => {
     clearTimeout(searchTimer)
     window.removeEventListener('keydown', focusGlobalSearch)
     window.removeEventListener('click', closeSearchPreview)
+    window.removeEventListener('click', closeUserMenu)
 })
 
 function toggleTheme() {
@@ -402,29 +416,53 @@ function logout() {
                         <div class="mx-1.5 h-5 w-px bg-zinc-200 dark:bg-zinc-800" />
 
                         <!-- User -->
-                        <Link
-                            href="/meu-perfil"
-                            class="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                        >
-                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500/15 text-xs font-semibold text-brand-600 dark:text-brand-400">
-                                {{ initials(user?.name) }}
-                            </div>
-                            <div class="hidden text-left sm:block">
-                                <p class="text-sm font-medium leading-tight text-zinc-900 dark:text-white">{{ user?.name }}</p>
-                                <p class="text-xs capitalize leading-tight text-zinc-400">{{ user?.profile }}</p>
-                            </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4 text-zinc-400 sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </Link>
+                        <div ref="userMenuPanel" class="relative">
+                            <button
+                                type="button"
+                                class="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                                @click="toggleUserMenu"
+                                @keydown.escape="userMenuOpen = false"
+                            >
+                                <img
+                                    v-if="user?.avatar_url"
+                                    :src="user.avatar_url"
+                                    alt=""
+                                    class="h-8 w-8 shrink-0 rounded-full object-cover"
+                                >
+                                <div v-else class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500/15 text-xs font-semibold text-brand-600 dark:text-brand-400">
+                                    {{ initials(user?.name) }}
+                                </div>
+                                <div class="hidden text-left sm:block">
+                                    <p class="text-sm font-medium leading-tight text-zinc-900 dark:text-white">{{ user?.name }}</p>
+                                    <p class="text-xs capitalize leading-tight text-zinc-400">{{ user?.profile }}</p>
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4 text-zinc-400 transition-transform sm:block" :class="userMenuOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </button>
 
-                        <button
-                            type="button"
-                            class="rounded-lg px-3 py-1.5 text-sm text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
-                            @click="logout"
-                        >
-                            Sair
-                        </button>
+                            <div
+                                v-if="userMenuOpen"
+                                class="absolute right-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-lg border border-zinc-200 bg-white py-1.5 shadow-xl dark:border-zinc-800 dark:bg-zinc-900"
+                            >
+                                <Link
+                                    href="/meu-perfil"
+                                    class="flex items-center gap-2.5 px-3 py-2 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                                    @click="userMenuOpen = false"
+                                >
+                                    <i class="bi bi-person-circle text-base leading-none text-zinc-400" aria-hidden="true" />
+                                    Meu perfil
+                                </Link>
+                                <button
+                                    type="button"
+                                    class="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                                    @click="logout"
+                                >
+                                    <i class="bi bi-box-arrow-right text-base leading-none text-zinc-400" aria-hidden="true" />
+                                    Sair
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>

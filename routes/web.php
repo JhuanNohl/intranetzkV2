@@ -3,6 +3,8 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\IntegrationMatrixController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TreinamentosController;
 use App\Models\Department;
 use App\Models\Document;
 use Illuminate\Http\Request;
@@ -100,7 +102,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/', fn () => Inertia::render('Dashboard'))->name('dashboard');
 
-    Route::get('/meu-perfil', fn () => Inertia::render('Profile/Show'))->name('profile.show');
+    Route::get('/meu-perfil', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/meu-perfil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/meu-perfil/foto', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
+    Route::delete('/meu-perfil/foto', [ProfileController::class, 'destroyAvatar'])->name('profile.avatar.destroy');
 
     // Corporativo
     Route::get('/comercial', $departmentDocuments('comercial', 'Comercial/Index'))->name('comercial.index');
@@ -114,7 +119,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/desenvolvimento/importar', [IntegrationMatrixController::class, 'import'])->name('desenvolvimento.import');
     Route::get('/suporte', fn () => Inertia::render('Support/Index'))->name('suporte.index');
     Route::get('/ti', fn () => Inertia::render('TI/Index'))->name('ti.index');
-    Route::get('/treinamentos', $departmentDocuments('treinamentos', 'Treinamentos/Index'))->name('treinamentos.index');
+    Route::get('/treinamentos', [TreinamentosController::class, 'index'])->name('treinamentos.index');
 
     // Operacional
     Route::get('/fabrica', fn () => Inertia::render('Fabrica/Index'))->name('fabrica.index');
