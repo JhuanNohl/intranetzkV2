@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'youtube' => [
+        // Link do canal, usado no botao "Acessar canal" (ex: https://www.youtube.com/@zkteco).
+        'channel_url' => env('YOUTUBE_CHANNEL_URL'),
+
+        // Link de uma playlist ou video do YouTube (o link normal, de compartilhar).
+        // E convertido automaticamente para o formato de embed em App\Support\Youtube::embedUrl().
+        'embed_url' => env('YOUTUBE_EMBED_URL'),
+
+        // Texto "Sobre" exibido ao lado do player, geralmente copiado da descricao do video/playlist.
+        'about' => env('YOUTUBE_ABOUT_TEXT'),
+    ],
+
 ];

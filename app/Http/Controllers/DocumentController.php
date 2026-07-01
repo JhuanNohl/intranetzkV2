@@ -18,7 +18,7 @@ use Inertia\Response;
 
 class DocumentController extends Controller
 {
-    private const FIXED_CONTENT_DEPARTMENT_SLUGS = ['ti', 't-i', 'manutencao', 'fabrica'];
+    private const FIXED_CONTENT_DEPARTMENT_SLUGS = ['ti', 't-i', 'manutencao', 'fabrica', 'suporte', 'desenvolvimento'];
 
     public function index(Request $request, ?Department $department = null, string $page = 'Documents/Index'): Response
     {

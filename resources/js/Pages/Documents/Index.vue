@@ -1,7 +1,7 @@
 <script setup>
 import AppShell from '@/Layouts/AppShell.vue'
 import { router, usePage } from '@inertiajs/vue3'
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 
 defineOptions({ layout: AppShell })
 
@@ -50,6 +50,26 @@ const pageSubtitle = computed(() => {
 })
 
 const pageTitle = computed(() => props.selectedDepartment?.name ?? 'Arquivos')
+
+const filteredCategories = computed(() => {
+    const departmentId = props.selectedDepartment?.id || form.department_id
+
+    if (!departmentId) return props.categories
+
+    const departmentCategories = props.categories.filter((category) => {
+        return Number(category.department_id) === Number(departmentId)
+    })
+
+    if (departmentCategories.length > 0) return departmentCategories
+
+    return props.categories.filter((category) => !category.department_id)
+})
+
+watch(() => form.department_id, () => {
+    const stillValid = filteredCategories.value.some((category) => Number(category.id) === Number(form.category_id))
+
+    if (!stillValid) form.category_id = ''
+})
 
 function applyFilters() {
     const url = props.selectedDepartment
@@ -154,7 +174,7 @@ function fileBadgeClass(label) {
                     class="rounded-lg border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
                 >
                     <option value="">Categoria</option>
-                    <option v-for="category in categories" :key="category.id" :value="category.id">
+                    <option v-for="category in filteredCategories" :key="category.id" :value="category.id">
                         {{ category.name }}
                     </option>
                 </select>

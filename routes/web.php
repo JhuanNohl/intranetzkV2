@@ -100,7 +100,13 @@ Route::middleware('auth')->group(function () {
         return response()->json(['documents' => $documents]);
     })->name('search.preview');
 
-    Route::get('/', fn () => Inertia::render('Dashboard'))->name('dashboard');
+    Route::get('/', fn () => Inertia::render('Dashboard', [
+        'youtube' => [
+            'channel_url' => config('services.youtube.channel_url'),
+            'embed_url' => \App\Support\Youtube::embedUrl(config('services.youtube.embed_url')),
+            'about' => config('services.youtube.about'),
+        ],
+    ]))->name('dashboard');
 
     Route::get('/meu-perfil', [ProfileController::class, 'show'])->name('profile.show');
     Route::put('/meu-perfil', [ProfileController::class, 'update'])->name('profile.update');

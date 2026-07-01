@@ -1,6 +1,8 @@
 <script setup>
 import AppShell from '@/Layouts/AppShell.vue'
+import ConfirmModal from '@/Components/ConfirmModal.vue'
 import { router } from '@inertiajs/vue3'
+import { ref } from 'vue'
 
 defineOptions({ layout: AppShell })
 
@@ -11,10 +13,18 @@ const props = defineProps({
     },
 })
 
-function destroyDocument() {
-    if (!confirm('Remover este arquivo?')) return
+const confirmDeleteOpen = ref(false)
+const deleting = ref(false)
 
-    router.delete(`/documents/${props.document.id}`)
+function destroyDocument() {
+    deleting.value = true
+
+    router.delete(`/documents/${props.document.id}`, {
+        onFinish: () => {
+            deleting.value = false
+            confirmDeleteOpen.value = false
+        },
+    })
 }
 
 function goBack() {
@@ -60,7 +70,7 @@ function visibilityLabel(visibility) {
                 <Link :href="`/documents/${document.id}/edit`" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700">
                     Editar
                 </Link>
-                <button type="button" class="rounded-lg px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10" @click="destroyDocument">
+                <button type="button" class="rounded-lg px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10" @click="confirmDeleteOpen = true">
                     Remover
                 </button>
             </div>
@@ -140,5 +150,14 @@ function visibilityLabel(visibility) {
 
             </aside>
         </div>
+
+        <ConfirmModal
+            v-model:open="confirmDeleteOpen"
+            title="Remover arquivo"
+            :message="`Tem certeza que deseja remover “${document.title}”? Essa ação não pode ser desfeita.`"
+            confirm-label="Remover"
+            :processing="deleting"
+            @confirm="destroyDocument"
+        />
     </div>
 </template>

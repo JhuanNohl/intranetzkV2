@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { router, useForm } from '@inertiajs/vue3'
 
 const props = defineProps({
@@ -59,9 +59,19 @@ const visibilityOptions = [
 const filteredCategories = computed(() => {
     if (!form.department_id) return props.categories
 
-    return props.categories.filter((category) => {
-        return !category.department_id || Number(category.department_id) === Number(form.department_id)
+    const departmentCategories = props.categories.filter((category) => {
+        return Number(category.department_id) === Number(form.department_id)
     })
+
+    if (departmentCategories.length > 0) return departmentCategories
+
+    return props.categories.filter((category) => !category.department_id)
+})
+
+watch(() => form.department_id, () => {
+    const stillValid = filteredCategories.value.some((category) => Number(category.id) === Number(form.document_category_id))
+
+    if (!stillValid) form.document_category_id = ''
 })
 
 function hasUnsavedChanges() {
