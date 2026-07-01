@@ -1,7 +1,7 @@
 <script setup>
 import AppShell from '@/Layouts/AppShell.vue'
 import { router, usePage } from '@inertiajs/vue3'
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 
 defineOptions({ layout: AppShell })
 
@@ -34,6 +34,22 @@ const form = reactive({
     category_id: props.filters.category_id ?? '',
 })
 const page = usePage()
+
+const areaLabels = {
+    comercial: 'Setor Corporativo',
+    'departamento-pessoal': 'Setor Corporativo',
+    financeiro: 'Setor Corporativo',
+    treinamentos: 'Área Técnica',
+    produtos: 'Área Operacional',
+}
+
+const pageSubtitle = computed(() => {
+    if (!props.selectedDepartment) return 'Central de Arquivos'
+
+    return areaLabels[props.selectedDepartment.slug] ?? props.selectedDepartment.name
+})
+
+const pageTitle = computed(() => props.selectedDepartment?.name ?? 'Arquivos')
 
 function applyFilters() {
     const url = props.selectedDepartment
@@ -89,15 +105,13 @@ function fileBadgeClass(label) {
 </script>
 
 <template>
-    <Head title="Arquivos" />
+    <Head :title="pageTitle" />
 
     <div class="space-y-6">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-                <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                    {{ selectedDepartment ? selectedDepartment.name : 'Central de Arquivos' }}
-                </p>
-                <h1 class="mt-1 text-2xl font-semibold tracking-tight">Arquivos</h1>
+                <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ pageSubtitle }}</p>
+                <h1 class="mt-1 text-2xl font-semibold tracking-tight">{{ pageTitle }}</h1>
             </div>
 
             <Link

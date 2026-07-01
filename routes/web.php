@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\IntegrationMatrixController;
 use App\Models\Department;
 use App\Models\Document;
 use Illuminate\Http\Request;
@@ -107,7 +108,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/financeiro', $departmentDocuments('financeiro', 'Financeiro/Index'))->name('financeiro.index');
 
     // Area Tecnica
-    Route::get('/desenvolvimento', $departmentDocuments('desenvolvimento', 'Desenvolvimento/Index'))->name('desenvolvimento.index');
+    Route::get('/desenvolvimento', [IntegrationMatrixController::class, 'index'])->name('desenvolvimento.index');
+    Route::get('/desenvolvimento/matriz', [IntegrationMatrixController::class, 'matrix'])->name('desenvolvimento.matrix');
+    Route::get('/desenvolvimento/equipamentos', [IntegrationMatrixController::class, 'equipment'])->name('desenvolvimento.equipment');
+    Route::post('/desenvolvimento/importar', [IntegrationMatrixController::class, 'import'])->name('desenvolvimento.import');
     Route::get('/suporte', fn () => Inertia::render('Support/Index'))->name('suporte.index');
     Route::get('/ti', fn () => Inertia::render('TI/Index'))->name('ti.index');
     Route::get('/treinamentos', $departmentDocuments('treinamentos', 'Treinamentos/Index'))->name('treinamentos.index');

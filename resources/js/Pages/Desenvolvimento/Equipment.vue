@@ -1,65 +1,57 @@
 <script setup>
 import AppShell from '@/Layouts/AppShell.vue'
+import { computed, reactive } from 'vue'
 
 defineOptions({ layout: AppShell })
 
-defineProps({
+const props = defineProps({
     stats: {
         type: Object,
         required: true,
     },
-    latestEquipment: {
+    equipment: {
         type: Array,
         required: true,
     },
 })
 
-const shortcuts = [
-    {
-        title: 'Matriz de Integrações',
-        description: 'Compatibilidade entre sistemas e equipamentos.',
-        icon: 'bi bi-grid-3x3-gap-fill',
-        href: '/desenvolvimento/matriz',
-        label: 'Acessar Matriz',
-    },
-    {
-        title: 'Equipamentos',
-        description: 'Equipamentos e suas compatibilidades com sistemas.',
-        icon: 'bi bi-hdd-stack-fill',
-        href: '/desenvolvimento/equipamentos',
-        label: 'Consultar',
-    },
-]
+const filters = reactive({
+    search: '',
+})
+
+const filteredEquipment = computed(() => {
+    const search = filters.search.trim().toLowerCase()
+
+    if (!search) return props.equipment
+
+    return props.equipment.filter((item) => item.model.toLowerCase().includes(search))
+})
 </script>
 
 <template>
-    <Head title="Desenvolvimento" />
+    <Head title="Equipamentos" />
 
     <div class="space-y-6">
-        <div>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400">Área Técnica</p>
-            <h1 class="mt-1 text-2xl font-semibold tracking-tight">Desenvolvimento</h1>
-        </div>
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+                <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                    <Link href="/desenvolvimento" class="hover:underline">Desenvolvimento</Link> /
+                </p>
+                <h1 class="mt-1 text-2xl font-semibold tracking-tight">Equipamentos</h1>
+                <p class="mt-2 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">Equipamentos e suas compatibilidades com sistemas.</p>
+            </div>
 
-        <section class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div
-                v-for="shortcut in shortcuts"
-                :key="shortcut.title"
-                class="flex min-h-44 flex-col items-center justify-center rounded-lg border border-zinc-200 bg-white px-6 py-7 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-            >
-                <i :class="shortcut.icon" class="text-4xl leading-none text-brand-700 dark:text-brand-400" aria-hidden="true" />
-                <h2 class="mt-5 text-lg font-semibold text-brand-700 dark:text-brand-400">{{ shortcut.title }}</h2>
-                <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{{ shortcut.description }}</p>
-
-                <Link
-                    :href="shortcut.href"
-                    class="mt-6 inline-flex items-center gap-1.5 rounded-md bg-brand-700 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-brand-600 dark:bg-brand-600 dark:hover:bg-brand-500"
-                >
-                    <i class="bi bi-box-arrow-up-right text-[0.8rem] leading-none" aria-hidden="true" />
-                    {{ shortcut.label }}
+            <div class="flex gap-2">
+                <Link href="/desenvolvimento" class="inline-flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-zinc-600 transition hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800">
+                    <i class="bi bi-arrow-left text-sm leading-none" aria-hidden="true" />
+                    Voltar
+                </Link>
+                <Link href="/desenvolvimento/matriz" class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-600 transition hover:bg-zinc-100 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800">
+                    <i class="bi bi-grid-3x3-gap-fill text-sm leading-none" aria-hidden="true" />
+                    Ver Matriz completa
                 </Link>
             </div>
-        </section>
+        </div>
 
         <section class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div class="rounded-lg border border-zinc-200 bg-white p-5 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
@@ -76,14 +68,22 @@ const shortcuts = [
             </div>
         </section>
 
-        <section class="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-            <header class="flex items-center gap-2 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-                <i class="bi bi-clock-history text-lg text-zinc-900 dark:text-zinc-100" aria-hidden="true" />
-                <h2 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">Últimos Equipamentos Adicionados</h2>
-            </header>
+        <section class="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+            <div class="relative max-w-sm">
+                <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-400" aria-hidden="true" />
+                <input
+                    v-model="filters.search"
+                    type="search"
+                    placeholder="Buscar equipamento"
+                    class="w-full rounded-lg border border-zinc-200 bg-white py-2.5 pl-9 pr-3 text-sm outline-none ring-brand-500/20 transition focus:border-brand-500 focus:ring-4 dark:border-white/10 dark:bg-zinc-950"
+                >
+            </div>
+        </section>
 
-            <div v-if="latestEquipment.length === 0" class="p-8 text-center">
-                <p class="text-sm text-zinc-500 dark:text-zinc-400">Nenhum equipamento cadastrado ainda. Importe a matriz de integrações para começar.</p>
+        <section class="overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+            <div v-if="filteredEquipment.length === 0" class="p-8 text-center">
+                <p class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Nenhum equipamento encontrado</p>
+                <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Ajuste a busca ou importe a matriz de integrações.</p>
             </div>
 
             <div v-else class="overflow-x-auto">
@@ -96,7 +96,7 @@ const shortcuts = [
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                        <tr v-for="item in latestEquipment" :key="item.id">
+                        <tr v-for="item in filteredEquipment" :key="item.id">
                             <td class="whitespace-nowrap px-4 py-3 font-medium text-zinc-900 dark:text-zinc-100">{{ item.model }}</td>
                             <td class="px-4 py-3 text-zinc-600 dark:text-zinc-300">
                                 <span v-if="item.compatible_systems_count === 0" class="text-zinc-400 dark:text-zinc-500">Nenhum</span>
@@ -114,13 +114,6 @@ const shortcuts = [
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="flex justify-end border-t border-zinc-200 px-4 py-3 dark:border-zinc-800">
-                <Link href="/desenvolvimento/equipamentos" class="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline dark:text-brand-400">
-                    Ver todos os equipamentos
-                    <i class="bi bi-arrow-right text-xs leading-none" aria-hidden="true" />
-                </Link>
             </div>
         </section>
     </div>
